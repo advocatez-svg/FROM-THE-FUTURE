@@ -1,0 +1,9 @@
+title: "قادم من المستقبل"
+description: "مقالات أدبية وتأملات إنسانية"
+lang: ar
+direction: rtl
+timezone: Asia/Dubai
+permalink: /:year/:month/:day/:title/
+markdown: kramdown
+kramdown:
+  input: GFM
