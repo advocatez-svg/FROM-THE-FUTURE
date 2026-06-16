@@ -1,4 +1,4 @@
-﻿---
+---
 layout: default
 title: "مقالات حديثة"
 lang: ar
