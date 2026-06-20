@@ -1,0 +1,182 @@
+---
+layout: default
+title: "الروزنامة — تقويم هجري تفاعلي"
+lang: ar
+dir: rtl
+permalink: /taqweem/
+---
+
+<section class="page-content cal-page" lang="ar" dir="rtl">
+  <h1>📅 روزنامة هجرية تفاعلية</h1>
+  <p class="cal-intro">تقويم أم القرى — تصفّح الأشهر، وشاهد ما يقابلها بالميلادي، وشارك الروزنامة مع أصدقائك.</p>
+
+  <div class="cal-toolbar">
+    <div class="cal-nav">
+      <button type="button" id="calPrev" class="cal-btn" aria-label="الشهر السابق">‹</button>
+      <div class="cal-title">
+        <span id="calMonthName">—</span>
+        <small id="calGregRange"></small>
+      </div>
+      <button type="button" id="calNext" class="cal-btn" aria-label="الشهر التالي">›</button>
+    </div>
+    <button type="button" id="calToday" class="cal-btn cal-today-btn">اليوم</button>
+  </div>
+
+  <table class="cal-grid" id="calGrid">
+    <thead>
+      <tr>
+        <th>السبت</th><th>الأحد</th><th>الإثنين</th><th>الثلاثاء</th>
+        <th>الأربعاء</th><th>الخميس</th><th>الجمعة</th>
+      </tr>
+    </thead>
+    <tbody id="calBody"></tbody>
+  </table>
+
+  <div class="cal-share">
+    <span class="cal-share-label">🔗 شارك الروزنامة مع الأصدقاء:</span>
+    <a id="calWhatsapp" class="cal-btn cal-share-btn" href="#" target="_blank" rel="noopener">واتساب</a>
+    <button type="button" id="calCopy" class="cal-btn cal-share-btn">نسخ الرابط</button>
+    <button type="button" id="calSysShare" class="cal-btn cal-share-btn" hidden>مشاركة…</button>
+    <span id="calCopied" class="cal-copied" hidden>تم النسخ ✓</span>
+  </div>
+
+  <p class="cal-note">المصدر: تقويم أم القرى (الهجري) المعتمد في المتصفح. قد يختلف بدء بعض الأشهر يوماً واحداً عن الرؤية المحلية للهلال.</p>
+</section>
+
+<script>
+(function () {
+  var MONTHS = ["محرّم","صفر","ربيع الأول","ربيع الآخر","جمادى الأولى","جمادى الآخرة",
+                "رجب","شعبان","رمضان","شوال","ذو القعدة","ذو الحجة"];
+  var GREG = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+  var AR_DIGITS = ["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
+
+  function toAr(n) {
+    return String(n).replace(/[0-9]/g, function (d) { return AR_DIGITS[+d]; });
+  }
+
+  var hijriFmt = new Intl.DateTimeFormat("en-US-u-ca-islamic-umalqura",
+    { year: "numeric", month: "numeric", day: "numeric" });
+
+  function toHijri(date) {
+    var parts = hijriFmt.formatToParts(date), y, m, d;
+    for (var i = 0; i < parts.length; i++) {
+      var p = parts[i];
+      if (p.type === "year") y = parseInt(p.value, 10);
+      else if (p.type === "month") m = parseInt(p.value, 10);
+      else if (p.type === "day") d = parseInt(p.value, 10);
+    }
+    return { y: y, m: m, d: d };
+  }
+
+  var DAY = 86400000;
+  var EPOCH = Date.UTC(622, 6, 19); // بداية التقويم الهجري تقريباً (ميلادي)
+
+  // تُعيد تاريخ اليوم الأول (ميلادي، UTC منتصف اليوم) لشهر هجري معيّن
+  function firstDayOf(hy, hm) {
+    var est = Math.round((hy - 1) * 354.367 + (hm - 1) * 29.53);
+    var t = EPOCH + est * DAY;
+    for (var i = 0; i < 60; i++) {
+      var h = toHijri(new Date(t));
+      var diff = (h.y - hy) * 12 + (h.m - hm);
+      if (diff === 0) {
+        t -= (h.d - 1) * DAY;
+        var h2 = toHijri(new Date(t));
+        if (h2.y === hy && h2.m === hm && h2.d === 1) return new Date(t);
+        // تصحيح دقيق
+        var guard = 0;
+        while (guard++ < 5) {
+          var hh = toHijri(new Date(t));
+          if (hh.d === 1 && hh.m === hm && hh.y === hy) return new Date(t);
+          t -= (hh.d > 15 ? -(31 - hh.d) : (hh.d - 1)) * DAY;
+        }
+        return new Date(t);
+      }
+      t -= Math.round(diff * 29.53) * DAY;
+    }
+    return new Date(t);
+  }
+
+  var state = (function () { var h = toHijri(new Date()); return { y: h.y, m: h.m }; })();
+
+  function render() {
+    var hm = state.m, hy = state.y;
+    var first = firstDayOf(hy, hm);
+    var nextM = hm === 12 ? 1 : hm + 1;
+    var nextY = hm === 12 ? hy + 1 : hy;
+    var next = firstDayOf(nextY, nextM);
+    var daysInMonth = Math.round((next.getTime() - first.getTime()) / DAY);
+
+    document.getElementById("calMonthName").textContent = MONTHS[hm - 1] + " " + toAr(hy) + " هـ";
+
+    var lastG = new Date(next.getTime() - DAY);
+    var gA = GREG[first.getUTCMonth()] + " " + toAr(first.getUTCFullYear());
+    var gB = GREG[lastG.getUTCMonth()] + " " + toAr(lastG.getUTCFullYear());
+    document.getElementById("calGregRange").textContent = (gA === gB) ? gA : (gA + " – " + gB);
+
+    // عمود البداية: السبت أولاً  (السبت=6 → 0)
+    var startCol = (first.getUTCDay() + 1) % 7;
+
+    var today = toHijri(new Date());
+    var body = document.getElementById("calBody");
+    body.innerHTML = "";
+    var dayNum = 1, cur = new Date(first.getTime());
+    for (var w = 0; w < 6 && dayNum <= daysInMonth; w++) {
+      var tr = document.createElement("tr");
+      for (var c = 0; c < 7; c++) {
+        var td = document.createElement("td");
+        if ((w === 0 && c < startCol) || dayNum > daysInMonth) {
+          td.className = "cal-empty";
+        } else {
+          var isToday = today.y === hy && today.m === hm && today.d === dayNum;
+          var isFri = cur.getUTCDay() === 5;
+          td.className = "cal-cell" + (isToday ? " cal-is-today" : "") + (isFri ? " cal-fri" : "");
+          td.innerHTML =
+            '<span class="cal-h">' + toAr(dayNum) + '</span>' +
+            '<span class="cal-g">' + toAr(cur.getUTCDate()) + " " + GREG[cur.getUTCMonth()].slice(0, 3) + "</span>";
+          dayNum++;
+          cur = new Date(cur.getTime() + DAY);
+        }
+        tr.appendChild(td);
+      }
+      body.appendChild(tr);
+    }
+  }
+
+  function step(delta) {
+    var m = state.m + delta, y = state.y;
+    if (m < 1) { m = 12; y--; } else if (m > 12) { m = 1; y++; }
+    state.m = m; state.y = y; render();
+  }
+
+  document.getElementById("calPrev").addEventListener("click", function () { step(-1); });
+  document.getElementById("calNext").addEventListener("click", function () { step(1); });
+  document.getElementById("calToday").addEventListener("click", function () {
+    var h = toHijri(new Date()); state.y = h.y; state.m = h.m; render();
+  });
+
+  // المشاركة
+  var url = window.location.href;
+  var shareText = "📅 روزنامة هجرية تفاعلية — تصفّح الأشهر وشاركها: ";
+  document.getElementById("calWhatsapp").href =
+    "https://wa.me/?text=" + encodeURIComponent(shareText + url);
+
+  var copyBtn = document.getElementById("calCopy");
+  var copied = document.getElementById("calCopied");
+  copyBtn.addEventListener("click", function () {
+    function done() { copied.hidden = false; setTimeout(function () { copied.hidden = true; }, 1800); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(done, function () { window.prompt("انسخ الرابط:", url); });
+    } else { window.prompt("انسخ الرابط:", url); }
+  });
+
+  var sysBtn = document.getElementById("calSysShare");
+  if (navigator.share) {
+    sysBtn.hidden = false;
+    sysBtn.addEventListener("click", function () {
+      navigator.share({ title: "روزنامة هجرية تفاعلية", text: shareText, url: url }).catch(function () {});
+    });
+  }
+
+  render();
+})();
+</script>

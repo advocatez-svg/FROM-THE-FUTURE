@@ -17,3 +17,38 @@ a:hover { text-decoration: underline; }
 .post h1, .page-content h1 { margin-top: 0; line-height: 1.45; }
 .post p { margin: 0 0 1.25em; font-size: 1.12rem; }
 @media (max-width: 640px) { .site-wrap { width: min(100% - 22px, 920px); padding-top: 24px; } .post, .page-content { padding: 18px; } .post p { font-size: 1.04rem; } }
+
+/* ===== الروزنامة الهجرية التفاعلية ===== */
+.cal-intro { color: var(--muted); margin: 0 0 22px; }
+.cal-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+.cal-nav { display: flex; align-items: center; gap: 10px; }
+.cal-title { text-align: center; min-width: 200px; }
+.cal-title span { display: block; font-size: 1.4rem; font-weight: 700; color: var(--ink); }
+.cal-title small { display: block; color: var(--muted); font-size: .9rem; margin-top: 2px; }
+.cal-btn { font-family: inherit; cursor: pointer; background: var(--paper); color: var(--accent); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; font-size: 1.1rem; line-height: 1; transition: background .15s, color .15s; }
+.cal-btn:hover { background: var(--accent); color: #fff; }
+.cal-today-btn { font-size: .95rem; padding: 9px 16px; }
+.cal-grid { width: 100%; border-collapse: separate; border-spacing: 6px; table-layout: fixed; }
+.cal-grid th { color: var(--muted); font-weight: 600; font-size: .9rem; padding: 6px 0; }
+.cal-grid td { height: 64px; vertical-align: top; border-radius: 8px; }
+.cal-cell { background: var(--paper); border: 1px solid var(--line); padding: 6px 8px; }
+.cal-cell .cal-h { display: block; font-size: 1.25rem; font-weight: 700; color: var(--ink); }
+.cal-cell .cal-g { display: block; font-size: .72rem; color: var(--muted); margin-top: 2px; }
+.cal-empty { background: transparent; }
+.cal-fri .cal-h { color: var(--accent); }
+.cal-is-today { background: var(--accent); border-color: var(--accent); }
+.cal-is-today .cal-h, .cal-is-today .cal-g { color: #fff; }
+.cal-share { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 26px 0 14px; padding-top: 18px; border-top: 1px solid var(--line); }
+.cal-share-label { color: var(--muted); }
+.cal-share-btn { font-size: .95rem; padding: 9px 16px; }
+.cal-copied { color: var(--accent); font-size: .9rem; }
+.cal-note { color: var(--muted); font-size: .85rem; margin: 6px 0 0; }
+@media (max-width: 640px) {
+  .cal-grid { border-spacing: 4px; }
+  .cal-grid th { font-size: .72rem; }
+  .cal-grid td { height: 52px; }
+  .cal-cell { padding: 4px 5px; }
+  .cal-cell .cal-h { font-size: 1.05rem; }
+  .cal-cell .cal-g { font-size: .62rem; }
+  .cal-title span { font-size: 1.15rem; }
+}
