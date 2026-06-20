@@ -8,7 +8,7 @@ permalink: /taqweem/
 
 <section class="page-content cal-page" lang="ar" dir="rtl">
   <h1>📅 روزنامة هجرية تفاعلية</h1>
-  <p class="cal-intro">تقويم أم القرى مع أوقات الصلاة في الإمارات والمناسبات الإسلامية المتّفق عليها — تصفّحها وشاركها مع أصدقائك.</p>
+  <p class="cal-intro">تقويم أم القرى مع أوقات الصلاة والمناسبات لإمارة أبوظبي وفق مركز جامع الشيخ زايد الكبير — تصفّحها وشاركها مع أصدقائك.</p>
 
   <div class="cal-toolbar">
     <div class="cal-nav">
@@ -71,7 +71,7 @@ permalink: /taqweem/
     <span id="calCopied" class="cal-copied" hidden>تم النسخ ✓</span>
   </div>
 
-  <p class="cal-note">التواريخ من تقويم أم القرى. أوقات الصلاة محسوبة لإمارة أبوظبي ومعايَرة على جدول <strong>مركز جامع الشيخ زايد الكبير (التوقيت الزوالي)</strong> لعام ١٤٤٨هـ، وجرى التحقق من مطابقتها صيفاً وشتاءً في حدود دقيقة واحدة. المناسبات المعروضة هي المتّفق عليها فقط.</p>
+  <p class="cal-note">التواريخ مضبوطة على كتاب التقويم الهجري لمركز جامع الشيخ زايد الكبير لعام ١٤٤٨هـ (وعلى تقويم أم القرى لما عداه). أوقات الصلاة محسوبة لإمارة أبوظبي ومعايَرة على جدول <strong>مركز جامع الشيخ زايد الكبير (التوقيت الزوالي)</strong> لعام ١٤٤٨هـ، وجرى التحقق من مطابقتها صيفاً وشتاءً في حدود دقيقة واحدة. المناسبات معروضة وفق كتاب التقويم الهجري الرسمي للمركز.</p>
 </section>
 
 <script>
@@ -96,9 +96,20 @@ permalink: /taqweem/
   ];
 
   /* ============ التحويل الهجري (أم القرى) ============ */
+  var DAY = 86400000, EPOCH = Date.UTC(622, 6, 19);
+
+  // أوائل الأشهر الميلادية لعام ١٤٤٨هـ وفق كتاب مركز جامع الشيخ زايد الكبير
+  // (آخر عنصر = غُرّة محرّم ١٤٤٩ = نهاية ذي الحجة)
+  var UMM1448 = [
+    Date.UTC(2026,5,16), Date.UTC(2026,6,16), Date.UTC(2026,7,14), Date.UTC(2026,8,12),
+    Date.UTC(2026,9,12), Date.UTC(2026,10,11), Date.UTC(2026,11,10), Date.UTC(2027,0,9),
+    Date.UTC(2027,1,8), Date.UTC(2027,2,10), Date.UTC(2027,3,8), Date.UTC(2027,4,7),
+    Date.UTC(2027,5,6)
+  ];
+
   var hijriFmt = new Intl.DateTimeFormat("en-US-u-ca-islamic-umalqura",
     { year: "numeric", month: "numeric", day: "numeric" });
-  function toHijri(date) {
+  function toHijriICU(date) {
     var parts = hijriFmt.formatToParts(date), y, m, d;
     for (var i = 0; i < parts.length; i++) {
       var p = parts[i];
@@ -108,18 +119,30 @@ permalink: /taqweem/
     }
     return { y: y, m: m, d: d };
   }
-  var DAY = 86400000, EPOCH = Date.UTC(622, 6, 19);
+  // التحويل: نعتمد جدول المركز الرسمي داخل ١٤٤٨هـ، وأم القرى القياسي خارجه
+  function toHijri(date) {
+    var t = date.getTime();
+    if (t >= UMM1448[0] && t < UMM1448[12]) {
+      for (var i = 0; i < 12; i++) {
+        if (t < UMM1448[i + 1])
+          return { y: 1448, m: i + 1, d: Math.round((t - UMM1448[i]) / DAY) + 1 };
+      }
+    }
+    return toHijriICU(date);
+  }
   function firstDayOf(hy, hm) {
+    if (hy === 1448) return new Date(UMM1448[hm - 1]);
+    if (hy === 1449 && hm === 1) return new Date(UMM1448[12]);
     var est = Math.round((hy - 1) * 354.367 + (hm - 1) * 29.53);
     var t = EPOCH + est * DAY;
     for (var i = 0; i < 60; i++) {
-      var h = toHijri(new Date(t));
+      var h = toHijriICU(new Date(t));
       var diff = (h.y - hy) * 12 + (h.m - hm);
       if (diff === 0) {
         t -= (h.d - 1) * DAY;
         var guard = 0;
         while (guard++ < 6) {
-          var hh = toHijri(new Date(t));
+          var hh = toHijriICU(new Date(t));
           if (hh.d === 1 && hh.m === hm && hh.y === hy) return new Date(t);
           t -= (hh.d > 15 ? -(31 - hh.d) : (hh.d - 1)) * DAY;
         }
@@ -169,21 +192,21 @@ permalink: /taqweem/
     return toAr(h12)+":"+toAr(mn<10?"0"+mn:mn)+" "+ap; }
 
   /* ============ المناسبات الإسلامية المتّفق عليها ============ */
+  // المناسبات وفق كتاب التقويم الهجري الرسمي لمركز جامع الشيخ زايد الكبير (١٤٤٨هـ)
   function eventsFor(m, d) {
     var ev = [];
-    if (m === 1 && d === 1)  ev.push({ t:"eid",    x:"رأس السنة الهجرية" });
-    if (m === 1 && d === 9)  ev.push({ t:"fast",   x:"يوم تاسوعاء (صيام سنّة)" });
-    if (m === 1 && d === 10) ev.push({ t:"fast",   x:"يوم عاشوراء (صيام سنّة)" });
-    if (m === 9 && d === 1)  ev.push({ t:"season", x:"بداية شهر رمضان المبارك" });
-    if (m === 9 && d >= 21)  ev.push({ t:"season", x:"العشر الأواخر من رمضان" });
+    if (m === 1 && d === 1)   ev.push({ t:"eid",    x:"رأس السنة الهجرية" });
+    if (m === 1 && d === 10)  ev.push({ t:"fast",   x:"يوم عاشوراء" });
+    if (m === 3 && d === 12)  ev.push({ t:"eid",    x:"المولد النبوي الشريف" });
+    if (m === 7 && d === 27)  ev.push({ t:"season", x:"الإسراء والمعراج" });
+    if (m === 9 && d === 1)   ev.push({ t:"season", x:"غرّة شهر رمضان المبارك" });
+    if (m === 9 && d >= 21)   ev.push({ t:"season", x:"العشر الأواخر من رمضان" });
     if (m === 9 && d >= 21 && d % 2 === 1) ev.push({ t:"season", x:"تحرّي ليلة القدر (ليلة وتر)" });
-    if (m === 10 && d === 1) ev.push({ t:"eid",    x:"عيد الفطر المبارك" });
-    if (m === 12 && d >= 1 && d <= 9)  ev.push({ t:"season", x:"العشر من ذي الحجة" });
-    if (m === 12 && d === 9) ev.push({ t:"fast",   x:"يوم عرفة (صيام لغير الحاجّ)" });
-    if (m === 12 && d === 10) ev.push({ t:"eid",   x:"عيد الأضحى المبارك" });
+    if (m === 10 && d === 1)  ev.push({ t:"eid",    x:"عيد الفطر المبارك" });
+    if (m === 12 && d >= 1 && d <= 9)   ev.push({ t:"season", x:"العشر من ذي الحجة" });
+    if (m === 12 && d === 9)  ev.push({ t:"fast",   x:"وقفة عرفة" });
+    if (m === 12 && d === 10) ev.push({ t:"eid",    x:"عيد الأضحى المبارك" });
     if (m === 12 && d >= 11 && d <= 13) ev.push({ t:"eid", x:"أيام التشريق" });
-    if ((d === 13 || d === 14 || d === 15) && m !== 9 && m !== 12)
-      ev.push({ t:"fast", x:"الأيام البيض (صيام سنّة)" });
     return ev;
   }
   function topType(ev){ for (var i=0;i<ev.length;i++) if(ev[i].t==="eid") return "eid";
