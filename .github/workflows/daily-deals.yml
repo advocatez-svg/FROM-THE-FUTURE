@@ -1,7 +1,7 @@
-name: تحديث الداشبورد وإرسال أفضل الفرص يومياً
+name: تحديث الداشبورد وإرسال أفضل الفرص (كل يومين 8 مساءً)
 on:
   schedule:
-    - cron: '0 6 * * *'        # يومياً 06:00 UTC ≈ 09:00 بتوقيت عمّان
+    - cron: '0 17 */2 * *'      # كل يومين 17:00 UTC = 20:00 (8 مساءً) بتوقيت عمّان
   workflow_dispatch: {}         # تشغيل يدوي عند الحاجة
 permissions:
   contents: write
@@ -23,7 +23,7 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add dashboard.html data/
-          git commit -m "تحديث يومي للداشبورد وأفضل الفرص ($(date -u +%F))" || echo "لا تغييرات"
+          git commit -m "تحديث دوري للداشبورد وأفضل الفرص ($(date -u +%F))" || echo "لا تغييرات"
           git push || echo "لا شيء للدفع"
       - name: إرسال أفضل الفرص إلى تيليجرام
         env:
