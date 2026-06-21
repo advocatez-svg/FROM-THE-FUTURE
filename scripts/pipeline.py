@@ -168,17 +168,7 @@ def run():
         raw[name] = rows
         print(f"{name}: {len(rows)}", flush=True)
 
-    # إحصاء كل الشقق لكل منطقة (للترتيب والشرائح)
-    areastats = {}
-    for name, _, _, _ in AREAS:
-        ppm = [r["price"]/r["size"] for r in raw[name] if is_apt(r["title"]) and ok(r["price"], r["size"])]
-        if ppm:
-            areastats[name] = dict(med=round(st.median(ppm)), n=len(ppm),
-                                   q1=round(q(ppm, .25)), q3=round(q(ppm, .75)), tier=tier(st.median(ppm)))
-    order = sorted(areastats, key=lambda a: -areastats[a]["med"])
-
-    # مرجع الأرضي/الروف لكل منطقة
-    ref = {}
+    # أرضي/روف فقط (الداشبورد كله مخصّص لشراء أرضي أو روف)
     floor_rows = []
     seen = set()
     for name, _, _, _ in AREAS:
@@ -188,8 +178,19 @@ def run():
             k = (r["title"][:50], r["price"])
             if k in seen: continue
             seen.add(k)
-            r2 = dict(r, area=name, ft=ft)
-            floor_rows.append(r2)
+            floor_rows.append(dict(r, area=name, ft=ft))
+
+    # إحصاء الأرضي/الروف لكل منطقة (للترتيب والشرائح والأعمدة)
+    areastats = {}
+    for name, _, _, _ in AREAS:
+        ppm = [r["price"]/r["size"] for r in floor_rows if r["area"] == name and ok(r["price"], r["size"])]
+        if ppm:
+            areastats[name] = dict(med=round(st.median(ppm)), n=len(ppm),
+                                   q1=round(q(ppm, .25)), q3=round(q(ppm, .75)), tier=tier(st.median(ppm)))
+    order = sorted(areastats, key=lambda a: -areastats[a]["med"])
+
+    # مرجع الأرضي/الروف لكل منطقة
+    ref = {}
     for name in areastats:
         for ft in ("أرضي", "روف"):
             v = [r["price"]/r["size"] for r in floor_rows if r["area"] == name and r["ft"] == ft and ok(r["price"], r["size"])]
@@ -219,10 +220,11 @@ def run():
         listings.append(rec)
 
     # أفضل الفرص: أرضي/روف برابط، أقل سعر متر مقابل العادل، بلا تنبيه
+    # أفضل الفرص المتاحة: أرضي/روف برابط، قيمة جيدة (عند/دون المتوسط)، بلا تنبيه — مرتّبة بالأكثر توفيراً
     deals = [x for x in listings if x.get("url") and x.get("ev", "").startswith(("🟢", "✅"))
-             and x.get("warn") == 0 and isinstance(x.get("diff"), int) and x["diff"] <= -5]
+             and x.get("warn") == 0 and isinstance(x.get("diff"), int)]
     deals.sort(key=lambda x: x["diff"])
-    top = deals[:10]
+    top = deals[:10]   # يرسل المتاح فقط إن كان أقل من 10
 
     today = datetime.date.today().isoformat()
     summary = dict(date=today, total_floor=len(listings),
