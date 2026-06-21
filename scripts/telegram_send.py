@@ -3,7 +3,7 @@
 """يرسل أفضل 10 فرص (data/top_deals.json) إلى تيليجرام عبر Bot API.
 المتغيرات المطلوبة: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 اختياري: DASHBOARD_URL (رابط الداشبورد المنشور)."""
-import json, os, html, urllib.request, urllib.parse, datetime
+import json, os, html, urllib.request, urllib.parse, urllib.error, datetime
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
@@ -41,12 +41,22 @@ def send(text):
         print("⚠️ TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID غير مضبوطين — طباعة الرسالة فقط:\n")
         print(text)
         return
+    print(f"chat_id المستخدم = {CHAT!r}  (طوله {len(CHAT)})")
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
     data = urllib.parse.urlencode({
         "chat_id": CHAT, "text": text, "parse_mode": "HTML",
         "disable_web_page_preview": "true"}).encode()
-    with urllib.request.urlopen(urllib.request.Request(url, data=data), timeout=30) as r:
-        print("Telegram:", r.status)
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url, data=data), timeout=30) as r:
+            print("✅ تم الإرسال — Telegram status:", r.status)
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", "replace")
+        print(f"❌ خطأ من تيليجرام: HTTP {e.code}")
+        print("الوصف:", body)
+        print("\nإرشاد: إن ظهر 'chat not found' فإن chat_id غير صحيح "
+              "(للقناة العامة استخدم @username، وللخاصة الرقم -100..). "
+              "وإن ظهر 'not enough rights' أو 'bot is not a member' فأضف البوت مشرفاً مع صلاحية النشر.")
+        raise
 
 if __name__ == "__main__":
     send(build_message())
