@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>داشبورد أسعار شقق عمّان — الأرضي والروف</title>
+<style>
+:root{--navy:#1f2a44;--orange:#eb8c00;--gold:#f0b35a;--teal:#2e7d8a;--green:#5a9367;--grey:#9aa6b2;--bg:#f4f6f8;}
+*{box-sizing:border-box;font-family:'Segoe UI',Tahoma,Arial,sans-serif}
+body{margin:0;background:var(--bg);color:#222;direction:rtl}
+header{background:linear-gradient(135deg,var(--navy),#33415e);color:#fff;padding:22px 26px}
+header h1{margin:0;font-size:22px}header p{margin:6px 0 0;opacity:.85;font-size:13px}
+.wrap{max-width:1180px;margin:0 auto;padding:18px}
+.kpis{display:flex;gap:14px;flex-wrap:wrap;margin:18px 0}
+.kpi{flex:1;min-width:150px;background:#fff;border-radius:10px;padding:16px;box-shadow:0 1px 4px #0001;border-top:3px solid var(--orange)}
+.kpi .v{font-size:26px;font-weight:bold;color:var(--navy)}.kpi .l{font-size:12px;color:#667}
+.card{background:#fff;border-radius:10px;padding:18px;box-shadow:0 1px 4px #0001;margin-bottom:18px}
+.card h2{margin:0 0 14px;font-size:17px;color:var(--navy);border-right:4px solid var(--orange);padding-right:10px}
+.bar-row{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:13px}
+.bar-row .nm{width:120px;text-align:left;font-weight:600}
+.bar-track{flex:1;background:#eef1f4;border-radius:6px;height:22px;position:relative}
+.bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;padding-right:8px;color:#fff;font-weight:bold;font-size:12px}
+.t-فاخرة{background:var(--orange)}.t-راقية{background:var(--gold)}.t-متوسطة{background:var(--teal)}.t-اقتصادية{background:var(--green)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 9px;text-align:right;border-bottom:1px solid #eef1f4}
+th{background:var(--navy);color:#fff;position:sticky;top:0;cursor:pointer;white-space:nowrap}
+th:hover{background:#2a3a5c}tr:hover td{background:#f9fafb}
+.badge{padding:3px 8px;border-radius:12px;font-size:11px;font-weight:bold;white-space:nowrap}
+.b1{background:#d6f5e0;color:#1c7a3e}.b2{background:#e3f0fb;color:#1f6fb2}.b3{background:#fff3d6;color:#a9760a}.b4{background:#fde0e0;color:#c0392b}.b0{background:#eee;color:#777}
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.filters select,.filters input{padding:8px;border:1px solid #cfd6dd;border-radius:7px;font-size:13px}
+a{color:var(--orange);text-decoration:none}a:hover{text-decoration:underline}
+.tbl-wrap{max-height:560px;overflow:auto;border:1px solid #eef1f4;border-radius:8px}
+.diff-neg{color:#1c7a3e;font-weight:bold}.diff-pos{color:#c0392b;font-weight:bold}
+.muted{color:#889}.foot{text-align:center;color:#889;font-size:12px;padding:14px}
+.chip{display:inline-block;background:#eef1f4;border-radius:6px;padding:2px 7px;font-size:11px;margin-inline-start:5px}
+.deal{display:flex;justify-content:space-between;gap:10px;padding:10px;border:1px solid #e7eaee;border-radius:8px;margin-bottom:8px;background:#fbfdfb}
+.deal .r{font-weight:bold;color:#1c7a3e;white-space:nowrap}
+</style></head><body>
+<header><h1>🏙️ داشبورد أسعار الشقق في عمّان — الأرضي والروف</h1>
+<p>10 مناطق · 3 مصادر (قوشان + Bayut + السوق المفتوح) · آخر تحديث: <b id="dt"></b></p></header>
+<div class="wrap">
+<div class="kpis">
+ <div class="kpi"><div class="v" id="k-tot"></div><div class="l">إجمالي شقق الدراسة</div></div>
+ <div class="kpi"><div class="v" id="k-list"></div><div class="l">إعلانات أرضي/روف</div></div>
+ <div class="kpi"><div class="v" id="k-gap"></div><div class="l">الفجوة بين الأعلى والأدنى</div></div>
+ <div class="kpi"><div class="v" id="k-deal"></div><div class="l">صفقات جيدة 🟢</div></div>
+</div>
+<div class="card"><h2>🔥 أفضل 10 فرص اليوم (أرضي/روف — الأقل سعراً مقابل العادل)</h2><div id="deals"></div></div>
+<div class="card"><h2>متوسط سعر المتر حسب المنطقة (دينار/م²)</h2><div id="bars"></div>
+<div style="margin-top:10px;font-size:12px" class="muted">🟥 فاخرة · 🟧 راقية · 🟨 متوسطة · 🟩 اقتصادية</div></div>
+<div class="card"><h2>مرجع السعر العادل — أرضي مقابل روف (الوسيط · Q1–Q3)</h2>
+<table id="fairtbl"><thead><tr><th>المنطقة</th><th>الأرضي الحقيقي</th><th>الروف</th></tr></thead><tbody></tbody></table></div>
+<div class="card"><h2>جدول الإعلانات — أرضي وروف (<span id="cnt"></span>)</h2>
+<div class="filters">
+ <select id="f-area"><option value="">كل المناطق</option></select>
+ <select id="f-ft"><option value="">كل الأنواع</option><option value="أرضي">أرضي</option><option value="روف">روف</option></select>
+ <select id="f-ev"><option value="">كل التقييمات</option><option value="🟢">🟢 صفقة</option><option value="✅">✅ عادل-أدنى</option><option value="🟡">🟡 عادل-أعلى</option><option value="🔴">🔴 مرتفع</option></select>
+ <input id="f-q" placeholder="بحث في العنوان..." style="flex:1;min-width:160px">
+</div>
+<div class="tbl-wrap"><table id="tbl"><thead><tr>
+ <th data-k="area">المنطقة</th><th data-k="ft">النوع</th><th data-k="size">م²</th>
+ <th data-k="price">السعر</th><th data-k="ppm">سعر/م²</th><th data-k="ev">التقييم</th>
+ <th data-k="fair">العادل المقدّر</th><th data-k="diff">فرق%</th><th data-k="src">المصدر</th><th>العنوان</th>
+</tr></thead><tbody></tbody></table></div></div>
+<div class="foot">أسعار عرض (مطلوبة) — السعر النهائي غالباً أقل بـ 5–15%. ⚠️ الأسعار المنخفضة بشكل لافت قد تكون تقسيط/مقدّم أو أخطاء — تحقّق من المصدر. للاسترشاد لا للتقييم الرسمي.</div>
+</div>
+<script>
+const DATA=__DATA__;
+const fmt=n=>n&&!isNaN(n)?Number(n).toLocaleString('en'):(n||'—');
+document.getElementById('dt').textContent=DATA.date||'';
+document.getElementById('k-tot').textContent=fmt(DATA.tot);
+document.getElementById('k-list').textContent=DATA.listings.length;
+document.getElementById('k-gap').textContent=DATA.gap+'%';
+document.getElementById('k-deal').textContent=DATA.listings.filter(x=>String(x.ev).includes('🟢')).length;
+// top deals
+const deals=DATA.listings.filter(x=>x.url&&(String(x.ev).startsWith('🟢')||String(x.ev).startsWith('✅'))&&x.warn===0&&Number.isInteger(x.diff)&&x.diff<=-5).sort((a,b)=>a.diff-b.diff).slice(0,10);
+const dl=document.getElementById('deals');
+dl.innerHTML=deals.length?deals.map(x=>`<div class="deal"><div><a href="${x.url}" target="_blank">${x.title}</a><div class="muted" style="font-size:12px">${x.area} · ${x.ft} · ${fmt(x.size)}م² · ${fmt(x.price)} دينار</div></div><div class="r">${fmt(x.ppm)}/م²<br><span style="font-size:11px">${x.diff}% عن العادل</span></div></div>`).join(''):'<span class="muted">لا توجد فرص مطابقة اليوم.</span>';
+// bars
+const bars=document.getElementById('bars');
+DATA.areas.forEach(a=>{const w=Math.round(a.med/DATA.maxmed*100);
+ bars.insertAdjacentHTML('beforeend',`<div class="bar-row"><div class="nm">${a.name} <span class="chip">${a.n}</span></div><div class="bar-track"><div class="bar-fill t-${a.tier}" style="width:${w}%">${fmt(a.med)}</div></div></div>`);});
+// fair table
+const fb=document.querySelector('#fairtbl tbody');
+const cellf=v=>v?`${fmt(v[1])} <span class="muted">(${fmt(v[2])}–${fmt(v[3])})</span> ·n=${v[0]}${v[0]<3?' ⚠️':''}`:'—';
+DATA.fair.forEach(r=>fb.insertAdjacentHTML('beforeend',`<tr><td><b>${r.area}</b></td><td>${cellf(r['أرضي'])}</td><td>${cellf(r['روف'])}</td></tr>`));
+const fa=document.getElementById('f-area');[...new Set(DATA.listings.map(x=>x.area))].forEach(a=>fa.add(new Option(a,a)));
+const tb=document.querySelector('#tbl tbody');let sortK='ppm',sortDir=1;
+function badge(ev){let c='b0';ev=String(ev);if(ev.includes('🟢'))c='b1';else if(ev.includes('✅'))c='b2';else if(ev.includes('🟡'))c='b3';else if(ev.includes('🔴'))c='b4';return `<span class="badge ${c}">${ev}</span>`;}
+function warnIcon(x){return x.warn===1?' <span title="سعر منخفض بشكل لافت — قد يكون قسط/مقدّم أو خطأ إعلان">⚠️</span>':'';}
+function render(){
+ let r=DATA.listings.slice();
+ const fa=document.getElementById('f-area').value,ff=document.getElementById('f-ft').value,fe=document.getElementById('f-ev').value,fq=document.getElementById('f-q').value.trim();
+ if(fa)r=r.filter(x=>x.area===fa);if(ff)r=r.filter(x=>x.ft===ff);if(fe)r=r.filter(x=>String(x.ev).includes(fe));if(fq)r=r.filter(x=>x.title.includes(fq));
+ r.sort((a,b)=>{let x=a[sortK],y=b[sortK];const nx=parseFloat(x),ny=parseFloat(y);if(!isNaN(nx)&&!isNaN(ny)){x=nx;y=ny;}return x>y?sortDir:x<y?-sortDir:0;});
+ document.getElementById('cnt').textContent=r.length+' إعلان';
+ tb.innerHTML=r.map(x=>{const d=(x.diff!==''&&!isNaN(x.diff))?`<span class="${x.diff<0?'diff-neg':'diff-pos'}">${x.diff>0?'+':''}${x.diff}%</span>`:'—';
+  const ttl=x.url?`<a href="${x.url}" target="_blank">${x.title}</a>`:x.title;
+  return `<tr><td>${x.area}</td><td>${x.ft}</td><td>${fmt(x.size)}</td><td>${fmt(x.price)}</td><td><b>${fmt(x.ppm)}</b>${warnIcon(x)}</td><td>${badge(x.ev)}</td><td>${fmt(x.fair)}</td><td>${d}</td><td class="muted">${x.src}</td><td>${ttl}</td></tr>`;}).join('');
+}
+document.querySelectorAll('#tbl th[data-k]').forEach(th=>th.onclick=()=>{const k=th.dataset.k;sortDir=(sortK===k)?-sortDir:1;sortK=k;render();});
+['f-area','f-ft','f-ev','f-q'].forEach(id=>document.getElementById(id).addEventListener('input',render));
+render();
+</script></body></html>
