@@ -16,4 +16,5 @@ a:hover { text-decoration: underline; }
 .post, .page-content { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: clamp(22px, 4vw, 42px); }
 .post h1, .page-content h1 { margin-top: 0; line-height: 1.45; }
 .post p { margin: 0 0 1.25em; font-size: 1.12rem; }
+.post-hero { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; margin: 0 0 1.75rem; border-radius: 6px; }
 @media (max-width: 640px) { .site-wrap { width: min(100% - 22px, 920px); padding-top: 24px; } .post, .page-content { padding: 18px; } .post p { font-size: 1.04rem; } }
