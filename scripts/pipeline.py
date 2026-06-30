@@ -353,7 +353,7 @@ def run():
             rec.update(ppm="", fair="", diff="", target="", warn=0, ev="— ناقص")
         listings.append(rec)
 
-    # أفضل الفرص: أرضي/روف برابط، أقل سعر متر مقابل العادل، بلا تنبيه
+    # أفضل الفرص: أرضي/روف برابط، أقل سعر متر مقابل مرجع أسعار العرض، بلا تنبيه
     # أفضل الفرص المتاحة: أرضي/روف برابط، قيمة جيدة (عند/دون المتوسط)، بلا تنبيه — مرتّبة بالأكثر توفيراً
     deals = [x for x in listings if x.get("url") and x.get("ev", "").startswith(("🟢", "✅"))
              and x.get("warn") == 0 and isinstance(x.get("diff"), int)]

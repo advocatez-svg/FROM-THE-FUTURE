@@ -54,7 +54,7 @@ def build_message():
             f"<b>{i}. {esc(d['area'])} · {esc(d['ft'])}</b>\n"
             f"   💰 {int(d['price']):,} دينار\n"
             f"{area_lines(d)}\n"
-            f"   🟢 أرخص بـ <b>{abs(d['diff'])}%</b> من السعر العادل (~{int(d['fair']):,})\n"
+            f"   🟢 أقل بـ <b>{abs(d['diff'])}%</b> من مرجع أسعار العرض (~{int(d['fair']):,})\n"
             f"   👤 {esc(d.get('advertiser_type', 'غير محدد'))}"
             f"{' · 📞 ' + esc(d.get('phone')) if d.get('phone') else ''}\n"
             f"   {title}\n"
@@ -63,7 +63,7 @@ def build_message():
         lines.append(f"📊 داشبورد الطوابق الأخرى: {esc(DASH)}")
     if FACEBOOK_GROUP:
         lines.append(f"📘 مجموعة فيسبوك: {esc(FACEBOOK_GROUP)}")
-    lines.append("\n<i>أسعار عرض — المقارنة هنا خاصة بشقق الطوابق الأخرى، وليست مع الأرضي أو الروف.</i>")
+    lines.append("\n<i>أسعار عرض — المقارنة هنا مع مرجع أسعار العرض لشقق الطوابق الأخرى، وليست تقييماً عقارياً نهائياً.</i>")
     return "\n".join(lines)
 
 

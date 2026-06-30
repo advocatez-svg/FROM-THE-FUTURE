@@ -43,10 +43,10 @@ a{color:var(--orange);text-decoration:none}a:hover{text-decoration:underline}
  <div class="kpi"><div class="v" id="k-gap"></div><div class="l">الفجوة بين الأعلى والأدنى</div></div>
  <div class="kpi"><div class="v" id="k-deal"></div><div class="l">صفقات جيدة 🟢</div></div>
 </div>
-<div class="card"><h2>🔥 أفضل 10 فرص اليوم (أرضي/روف — الأقل سعراً مقابل العادل)</h2><div id="deals"></div></div>
+<div class="card"><h2>🔥 أفضل 10 فرص اليوم (أرضي/روف — الأقل سعراً مقابل مرجع العرض)</h2><div id="deals"></div></div>
 <div class="card"><h2>متوسط سعر متر الأرضي/الروف حسب المنطقة (دينار/م²)</h2><div id="bars"></div>
 <div style="margin-top:10px;font-size:12px" class="muted">🟥 فاخرة · 🟧 راقية · 🟨 متوسطة · 🟩 اقتصادية</div></div>
-<div class="card"><h2>مرجع السعر العادل — أرضي مقابل روف (الوسيط · Q1–Q3)</h2>
+<div class="card"><h2>مرجع أسعار العرض — أرضي مقابل روف (الوسيط · Q1–Q3)</h2>
 <table id="fairtbl"><thead><tr><th>المنطقة</th><th>الأرضي الحقيقي</th><th>الروف</th></tr></thead><tbody></tbody></table></div>
 <div class="card"><h2>جدول الإعلانات — أرضي وروف (<span id="cnt"></span>)</h2>
 <div class="filters">
@@ -58,7 +58,7 @@ a{color:var(--orange);text-decoration:none}a:hover{text-decoration:underline}
 <div class="tbl-wrap"><table id="tbl"><thead><tr>
  <th data-k="area">المنطقة</th><th data-k="ft">النوع</th><th data-k="size">م² التسعير</th>
  <th data-k="price">السعر</th><th data-k="ppm">سعر/م²</th><th data-k="ev">التقييم</th>
- <th data-k="fair">العادل المقدّر</th><th data-k="diff">فرق%</th><th data-k="src">المصدر</th><th>العنوان</th>
+ <th data-k="fair">مرجع العرض</th><th data-k="diff">فرق%</th><th data-k="src">المصدر</th><th>العنوان</th>
 </tr></thead><tbody></tbody></table></div></div>
 <div class="foot">أسعار عرض (مطلوبة) — السعر النهائي غالباً أقل بـ 5–15%. ⚠️ الأسعار المنخفضة بشكل لافت قد تكون تقسيط/مقدّم أو أخطاء — تحقّق من المصدر. للاسترشاد لا للتقييم الرسمي.</div>
 </div>
@@ -73,7 +73,7 @@ document.getElementById('k-deal').textContent=DATA.listings.filter(x=>String(x.e
 // top deals
 const deals=DATA.listings.filter(x=>x.url&&(String(x.ev).startsWith('🟢')||String(x.ev).startsWith('✅'))&&x.warn===0&&Number.isInteger(x.diff)).sort((a,b)=>a.diff-b.diff).slice(0,10);
 const dl=document.getElementById('deals');
- dl.innerHTML=deals.length?deals.map(x=>`<div class="deal"><div><a href="${x.url}" target="_blank">${x.title}</a><div class="muted" style="font-size:12px">${x.area} · ${x.ft} · ${fmt(x.size)}م² ${x.price_per_sqm_basis||'المساحة المعلنة'}${x.external_size?` · خارجي/استعمال ${fmt(x.external_size)}م²`:''} · ${fmt(x.price)} دينار</div></div><div class="r">${fmt(x.ppm)}/م²<br><span style="font-size:11px">${x.diff}% عن العادل</span></div></div>`).join(''):'<span class="muted">لا توجد فرص مطابقة اليوم.</span>';
+ dl.innerHTML=deals.length?deals.map(x=>`<div class="deal"><div><a href="${x.url}" target="_blank">${x.title}</a><div class="muted" style="font-size:12px">${x.area} · ${x.ft} · ${fmt(x.size)}م² ${x.price_per_sqm_basis||'المساحة المعلنة'}${x.external_size?` · خارجي/استعمال ${fmt(x.external_size)}م²`:''} · ${fmt(x.price)} دينار</div></div><div class="r">${fmt(x.ppm)}/م²<br><span style="font-size:11px">${x.diff}% عن مرجع العرض</span></div></div>`).join(''):'<span class="muted">لا توجد فرص مطابقة اليوم.</span>';
 // bars
 const bars=document.getElementById('bars');
 DATA.areas.forEach(a=>{const w=Math.round(a.med/DATA.maxmed*100);
