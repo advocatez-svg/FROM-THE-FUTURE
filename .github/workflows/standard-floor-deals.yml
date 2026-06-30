@@ -40,6 +40,7 @@ jobs:
         if: ${{ github.event.inputs.send_telegram == 'true' }}
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
           TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
           TELEGRAM_BATCH_INDEX: ${{ github.event.inputs.batch_index }}
           TELEGRAM_BATCH_SIZE: '2'

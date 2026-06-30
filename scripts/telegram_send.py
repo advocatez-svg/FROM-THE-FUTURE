@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """يرسل أفضل فرص (data/top_deals.json) إلى تيليجرام عبر Bot API.
-المتغيرات المطلوبة: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+المتغيرات المطلوبة: TELEGRAM_BOT_TOKEN, TELEGRAM_CHANNEL_ID أو TELEGRAM_CHAT_ID
 اختياري: DASHBOARD_URL, FACEBOOK_GROUP_URL, TELEGRAM_BATCH_INDEX, TELEGRAM_BATCH_SIZE."""
 import json, os, html, urllib.request, urllib.parse, urllib.error, datetime
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
-CHAT  = os.environ.get("TELEGRAM_CHAT_ID", "")
+CHAT  = os.environ.get("TELEGRAM_CHANNEL_ID") or os.environ.get("TELEGRAM_CHAT_ID", "")
 DASH  = os.environ.get("DASHBOARD_URL", "")
 FACEBOOK_GROUP = os.environ.get("FACEBOOK_GROUP_URL", "https://www.facebook.com/groups/JordanPropertyGroup")
 BATCH_INDEX = os.environ.get("TELEGRAM_BATCH_INDEX", "")
@@ -76,7 +76,7 @@ def build_message():
 
 def send(text):
     if not TOKEN or not CHAT:
-        print("⚠️ TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID غير مضبوطين — طباعة الرسالة فقط:\n")
+        print("⚠️ TELEGRAM_BOT_TOKEN / TELEGRAM_CHANNEL_ID غير مضبوطين — طباعة الرسالة فقط:\n")
         print(text)
         return
     print(f"chat_id المستخدم = {CHAT!r}  (طوله {len(CHAT)})")

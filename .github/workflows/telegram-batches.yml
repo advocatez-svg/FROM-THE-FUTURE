@@ -41,6 +41,7 @@ jobs:
       - name: إرسال دفعة تيليجرام
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
           TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
           DASHBOARD_URL:      ${{ vars.DASHBOARD_URL }}
           FACEBOOK_GROUP_URL: ${{ vars.FACEBOOK_GROUP_URL }}
