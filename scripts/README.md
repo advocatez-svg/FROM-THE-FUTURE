@@ -47,7 +47,7 @@ TELEGRAM_BOT_TOKEN=xxx TELEGRAM_CHAT_ID=yyy python3 scripts/telegram_send.py
 
 ## 🗂️ المخرجات
 - `dashboard.html` — الداشبورد التفاعلي (يُحدّث يومياً).
-- `data/top_deals.json` — أفضل 10 فرص (تُرسل لتيليجرام).
+- `data/top_deals.json` — أفضل 10 فرص (تُرسل لتيليجرام على 5 دفعات، كل دفعة عقارين، من 10 صباحاً إلى 10 مساءً).
   - تشمل الآن رقم الهاتف ونوع المعلن عند توفرهما من صفحة الإعلان الأصلية.
 - `data/listings.json` — كل إعلانات الأرضي/الروف مع التقييم.
 - `data/summary.json` — ملخّص المناطق والمتوسطات.

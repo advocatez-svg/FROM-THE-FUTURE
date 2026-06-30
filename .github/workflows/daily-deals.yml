@@ -1,4 +1,4 @@
-name: تحديث الداشبورد وإرسال أفضل الفرص (يومياً 8 مساءً)
+name: تحديث الداشبورد وأفضل الفرص (يومياً 8 مساءً)
 on:
   schedule:
     - cron: '0 17 * * *'        # يومياً 17:00 UTC = 20:00 مساءً بتوقيت عمّان
@@ -25,9 +25,3 @@ jobs:
           git add dashboard.html data/
           git commit -m "تحديث دوري للداشبورد وأفضل الفرص ($(date -u +%F))" || echo "لا تغييرات"
           git push || echo "لا شيء للدفع"
-      - name: إرسال أفضل الفرص إلى تيليجرام
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
-          DASHBOARD_URL:      ${{ vars.DASHBOARD_URL }}
-        run: python scripts/telegram_send.py

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""يرسل أفضل 10 فرص (data/top_deals.json) إلى تيليجرام عبر Bot API.
+"""يرسل أفضل فرص (data/top_deals.json) إلى تيليجرام عبر Bot API.
 المتغيرات المطلوبة: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
-اختياري: DASHBOARD_URL (رابط الداشبورد المنشور), FACEBOOK_GROUP_URL (رابط مجموعة فيسبوك)."""
+اختياري: DASHBOARD_URL, FACEBOOK_GROUP_URL, TELEGRAM_BATCH_INDEX, TELEGRAM_BATCH_SIZE."""
 import json, os, html, urllib.request, urllib.parse, urllib.error, datetime
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -10,20 +10,29 @@ TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 CHAT  = os.environ.get("TELEGRAM_CHAT_ID", "")
 DASH  = os.environ.get("DASHBOARD_URL", "")
 FACEBOOK_GROUP = os.environ.get("FACEBOOK_GROUP_URL", "https://www.facebook.com/groups/JordanPropertyGroup")
+BATCH_INDEX = os.environ.get("TELEGRAM_BATCH_INDEX", "")
+BATCH_SIZE = int(os.environ.get("TELEGRAM_BATCH_SIZE", "2"))
 
 def esc(s): return html.escape(str(s))
 
 def build_message():
     deals = json.load(open(os.path.join(ROOT, "data", "top_deals.json"), encoding="utf-8"))
+    batch_label = ""
+    start = 0
+    if BATCH_INDEX != "":
+        start = int(BATCH_INDEX) * BATCH_SIZE
+        deals = deals[start:start + BATCH_SIZE]
+        total_batches = max(1, (len(json.load(open(os.path.join(ROOT, "data", "top_deals.json"), encoding="utf-8"))) + BATCH_SIZE - 1) // BATCH_SIZE)
+        batch_label = f" — الدفعة {int(BATCH_INDEX) + 1}/{total_batches}"
     try:
         summ = json.load(open(os.path.join(ROOT, "data", "summary.json"), encoding="utf-8"))
         date = summ.get("date", "")
     except Exception:
         date = datetime.date.today().isoformat()
-    lines = [f"🏙️ <b>أفضل {len(deals)} فرص شقق (أرضي/روف) — عمّان</b>", f"📅 {esc(date)}", ""]
+    lines = [f"🏙️ <b>فرص عقارية مختارة — عمّان{batch_label}</b>", f"📅 {esc(date)}", ""]
     if not deals:
-        lines.append("لا توجد فرص مطابقة اليوم.")
-    for i, d in enumerate(deals, 1):
+        lines.append("لا توجد فرص في هذه الدفعة.")
+    for i, d in enumerate(deals, start + 1):
         t = esc(d.get("title", ""))
         if d.get("url"):
             t = f'<a href="{esc(d["url"])}">{t}</a>'

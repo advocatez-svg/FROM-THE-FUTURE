@@ -1,0 +1,47 @@
+name: إرسال فرص تيليجرام على دفعات (10 صباحاً - 10 مساءً)
+
+on:
+  schedule:
+    - cron: '0 7 * * *'   # 10:00 صباحاً بتوقيت عمّان
+    - cron: '0 10 * * *'  # 13:00 ظهراً بتوقيت عمّان
+    - cron: '0 13 * * *'  # 16:00 عصراً بتوقيت عمّان
+    - cron: '0 16 * * *'  # 19:00 مساءً بتوقيت عمّان
+    - cron: '0 19 * * *'  # 22:00 مساءً بتوقيت عمّان
+  workflow_dispatch:
+    inputs:
+      batch_index:
+        description: 'Batch index from 0 to 4'
+        required: false
+        default: '0'
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - name: اختيار دفعة الإرسال
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "TELEGRAM_BATCH_INDEX=${{ github.event.inputs.batch_index }}" >> "$GITHUB_ENV"
+          else
+            case "$(date -u +%H)" in
+              07) echo "TELEGRAM_BATCH_INDEX=0" >> "$GITHUB_ENV" ;;
+              10) echo "TELEGRAM_BATCH_INDEX=1" >> "$GITHUB_ENV" ;;
+              13) echo "TELEGRAM_BATCH_INDEX=2" >> "$GITHUB_ENV" ;;
+              16) echo "TELEGRAM_BATCH_INDEX=3" >> "$GITHUB_ENV" ;;
+              19) echo "TELEGRAM_BATCH_INDEX=4" >> "$GITHUB_ENV" ;;
+              *)  echo "TELEGRAM_BATCH_INDEX=0" >> "$GITHUB_ENV" ;;
+            esac
+          fi
+          echo "TELEGRAM_BATCH_SIZE=2" >> "$GITHUB_ENV"
+      - name: إرسال دفعة تيليجرام
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+          DASHBOARD_URL:      ${{ vars.DASHBOARD_URL }}
+          FACEBOOK_GROUP_URL: ${{ vars.FACEBOOK_GROUP_URL }}
+        run: python scripts/telegram_send.py
