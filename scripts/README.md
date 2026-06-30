@@ -67,3 +67,4 @@ TELEGRAM_BOT_TOKEN=xxx TELEGRAM_CHAT_ID=yyy python3 scripts/telegram_send.py
 ## 🔧 تخصيص
 - **عدد الفرص / معايير الفرصة:** في `scripts/pipeline.py` دالة `run()` (المتغيّر `top` والشرط `diff <= -5`).
 - **المناطق:** عدّل قائمة `AREAS` في أعلى `pipeline.py`.
+- **حدود السحب:** يمكن ضبط `FETCH_TRIES` و`FETCH_TIMEOUT` و`SCRAPE_MAX_PAGES` إذا كان أحد المصادر بطيئاً أو يحجب الطلبات.

@@ -8,6 +8,9 @@ UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data")
 os.makedirs(DATA, exist_ok=True)
+FETCH_TRIES = int(os.environ.get("FETCH_TRIES", "2"))
+FETCH_TIMEOUT = int(os.environ.get("FETCH_TIMEOUT", "12"))
+SCRAPE_MAX_PAGES = int(os.environ.get("SCRAPE_MAX_PAGES", "8"))
 
 # (الاسم, سلَق قوشان بالعربي أو None, سلَق Bayut بالإنجليزي أو None, سلَق السوق المفتوح بالعربي أو None)
 AREAS = [
@@ -23,11 +26,13 @@ AREAS = [
     ("شفا بدران",    "شفا-بدران",    "shafa-badran",  "شفا-بدران"),
 ]
 
-def fetch(url, tries=4):
+def fetch(url, tries=None):
+    if tries is None:
+        tries = FETCH_TRIES
     for a in range(tries):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": UA})
-            with urllib.request.urlopen(req, timeout=35) as r:
+            with urllib.request.urlopen(req, timeout=FETCH_TIMEOUT) as r:
                 return r.read().decode("utf-8", "replace")
         except Exception:
             time.sleep(1.5 * (a + 1))
@@ -82,7 +87,8 @@ def contact_details(url, source, title=""):
     return details
 
 # ---------- قوشان (Houzez) ----------
-def scrape_qoshan(slug, maxp=20):
+def scrape_qoshan(slug, maxp=None):
+    maxp = maxp or SCRAPE_MAX_PAGES
     base = "https://qoshan.com/city/" + urllib.parse.quote(slug) + "/"
     out = {}
     for p in range(1, maxp + 1):
@@ -122,8 +128,9 @@ def _bayut_hits(h):
         out.append(obj)
     return out
 
-def scrape_bayut(slug, maxp=20):
+def scrape_bayut(slug, maxp=None):
     if not slug: return []
+    maxp = maxp or SCRAPE_MAX_PAGES
     base = f"https://www.bayut.jo/en/amman/apartments-for-sale-in-{slug}/"
     out = {}
     for p in range(1, maxp + 1):
@@ -149,8 +156,9 @@ def scrape_bayut(slug, maxp=20):
 
 # ---------- السوق المفتوح (OpenSooq) ----------
 def _ar2en(s): return (s or "").translate(str.maketrans("٠١٢٣٤٥٦٧٨٩", "0123456789"))
-def scrape_opensooq(slug, maxp=20):
+def scrape_opensooq(slug, maxp=None):
     if not slug: return []
+    maxp = maxp or SCRAPE_MAX_PAGES
     base = ("https://jo.opensooq.com/ar/" + urllib.parse.quote("عمان") + "/" +
             urllib.parse.quote(slug) + "/" + urllib.parse.quote("عقارات") + "/" +
             urllib.parse.quote("شقق-للبيع"))
@@ -208,11 +216,14 @@ def _first_area(patterns, text):
                 return value
     return None
 
-def _external_areas(text):
+def _external_areas(text, include_roof=False):
     vals = []
+    external_words = "ترس|تراس|تراسات|حديقة|حدائق|خارجي|خارجية|خارجيه"
+    if include_roof:
+        external_words = "ترس|تراس|تراسات|حديقة|حدائق|روف|رووف|سطح|خارجي|خارجية|خارجيه"
     patterns = [
-        r'(?:مع|و|وال|بالإضافة إلى)\s*(?:ترس|تراس|تراسات|حديقة|حدائق|روف|رووف|سطح)\D{0,18}([\d,]{2,4})\s*(?:م²|م2|متر|م)?',
-        r'(?:ترس|تراس|تراسات|حديقة|حدائق|خارجي|خارجية|خارجيه)\D{0,18}([\d,]{2,4})\s*(?:م²|م2|متر|م)?',
+        rf'(?:مع|و|وال|بالإضافة إلى)\s*(?:{external_words})\D{{0,18}}([\d,]{{2,4}})\s*(?:م²|م2|متر|م)?',
+        rf'(?:{external_words})\D{{0,18}}([\d,]{{2,4}})\s*(?:م²|م2|متر|م)?',
     ]
     for pattern in patterns:
         for m in re.finditer(pattern, text):
@@ -230,8 +241,9 @@ def area_breakdown(row, ft):
         r'(?:مساحة\s*)?(?:القوشان|الكوشان)\D{0,18}([\d,]{2,4})',
         r'(?:مساحة\s*)?(?:داخلي|داخلية|داخليه)\D{0,18}([\d,]{2,4})',
         r'(?:مساحة\s*)?(?:الشقة|الشقه)\D{0,18}([\d,]{2,4})',
+        r'(?:شقة|شقه)(?:\s+[^\d\s]+){0,4}\s+([\d,]{2,4})\s*(?:م²|م2|متر|م)\b',
     ], title)
-    external = _external_areas(title)
+    external = _external_areas(title, include_roof=bool(deed))
 
     if deed and advertised and advertised > deed and not external:
         external = advertised - deed
@@ -270,6 +282,10 @@ def q(v, x):
     v = sorted(v); i = x * (len(v) - 1); lo = math.floor(i); hi = math.ceil(i)
     return v[lo] if lo == hi else v[lo] + (v[hi] - v[lo]) * (i - lo)
 def tier(m): return "فاخرة" if m >= 1000 else "راقية" if m >= 800 else "متوسطة" if m >= 700 else "اقتصادية"
+
+def write_json(name, payload, **kwargs):
+    with open(os.path.join(DATA, name), "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, **kwargs)
 
 def run():
     raw = {}
@@ -350,9 +366,9 @@ def run():
     summary = dict(date=today, total_floor=len(listings),
                    areas=[dict(name=a, **areastats[a]) for a in order],
                    gap=round((areastats[order[0]]["med"] - areastats[order[-1]]["med"]) / areastats[order[-1]]["med"] * 100) if order else 0)
-    json.dump(summary, open(os.path.join(DATA, "summary.json"), "w"), ensure_ascii=False, indent=1)
-    json.dump(listings, open(os.path.join(DATA, "listings.json"), "w"), ensure_ascii=False)
-    json.dump(top, open(os.path.join(DATA, "top_deals.json"), "w"), ensure_ascii=False, indent=1)
+    write_json("summary.json", summary, indent=1)
+    write_json("listings.json", listings)
+    write_json("top_deals.json", top, indent=1)
 
     fair_out = [dict(area=a, **{t: list(ref[(a, t)]) if (a, t) in ref else None for t in ("أرضي", "روف")}) for a in order]
     build_dashboard(summary, listings, fair_out, today)
