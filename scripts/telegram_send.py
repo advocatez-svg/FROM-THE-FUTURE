@@ -15,6 +15,29 @@ BATCH_SIZE = int(os.environ.get("TELEGRAM_BATCH_SIZE", "2"))
 
 def esc(s): return html.escape(str(s))
 
+def area_lines(d):
+    basis = d.get("price_per_sqm_basis") or "المساحة المعلنة"
+    internal = d.get("internal_size")
+    external = d.get("external_size")
+    advertised = d.get("advertised_size") or d.get("size")
+    confidence = d.get("area_confidence", "")
+    needs_check = confidence == "needs_area_verification" or (
+        not confidence and d.get("ft") == "روف" and not internal
+    )
+    lines = []
+    if internal:
+        lines.append(f"   📐 داخلي/قوشان: <b>{esc(internal)}</b>م²")
+        if advertised and str(advertised) != str(internal):
+            lines.append(f"   📏 المساحة المعلنة: {esc(advertised)}م²")
+    elif advertised:
+        lines.append(f"   📐 المساحة المعلنة: <b>{esc(advertised)}</b>م²")
+    if external:
+        lines.append(f"   🌿 خارجي/استعمال: <b>{esc(external)}</b>م²")
+    if needs_check:
+        lines.append("   ⚠️ يجب تأكيد مساحة القوشان قبل اعتماد سعر المتر.")
+    lines.append(f"   💵 سعر المتر على {esc(basis)}: <b>{esc(d.get('ppm', ''))}/م²</b>")
+    return "\n".join(lines)
+
 def build_message():
     deals = json.load(open(os.path.join(ROOT, "data", "top_deals.json"), encoding="utf-8"))
     batch_label = ""
@@ -38,7 +61,8 @@ def build_message():
             t = f'<a href="{esc(d["url"])}">{t}</a>'
         lines.append(
             f"<b>{i}. {esc(d['area'])} · {esc(d['ft'])}</b>\n"
-            f"   {d['size']}م² · {int(d['price']):,} دينار · <b>{d['ppm']}/م²</b>\n"
+            f"   💰 {int(d['price']):,} دينار\n"
+            f"{area_lines(d)}\n"
             f"   🟢 أرخص بـ <b>{abs(d['diff'])}%</b> من السعر العادل (~{int(d['fair']):,})\n"
             f"   👤 {esc(d.get('advertiser_type', 'غير محدد'))}"
             f"{' · 📞 ' + esc(d.get('phone')) if d.get('phone') else ''}\n"
@@ -47,7 +71,7 @@ def build_message():
         lines.append(f"📊 الداشبورد الكامل: {esc(DASH)}")
     if FACEBOOK_GROUP:
         lines.append(f"📘 مجموعة فيسبوك: {esc(FACEBOOK_GROUP)}")
-    lines.append("\n<i>أسعار عرض — السعر النهائي غالباً أقل بـ 5–15%. للاسترشاد.</i>")
+    lines.append("\n<i>أسعار عرض — سعر المتر يعتمد على مساحة القوشان عند توفرها، وإلا فهو حسب المساحة المعلنة ويحتاج تحقق.</i>")
     return "\n".join(lines)
 
 def send(text):

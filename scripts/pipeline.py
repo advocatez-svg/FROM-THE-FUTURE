@@ -198,6 +198,72 @@ def fix_size(r):
         ts = title_sizes(r.get("title", ""))
         r["size"] = ts[0] if len(ts) == 1 else None
     return r
+
+def _first_area(patterns, text):
+    for pattern in patterns:
+        m = re.search(pattern, text)
+        if m:
+            value = int(m.group(1).replace(",", ""))
+            if 30 <= value <= 2000:
+                return value
+    return None
+
+def _external_areas(text):
+    vals = []
+    patterns = [
+        r'(?:مع|و|وال|بالإضافة إلى)\s*(?:ترس|تراس|تراسات|حديقة|حدائق|روف|رووف|سطح)\D{0,18}([\d,]{2,4})\s*(?:م²|م2|متر|م)?',
+        r'(?:ترس|تراس|تراسات|حديقة|حدائق|خارجي|خارجية|خارجيه)\D{0,18}([\d,]{2,4})\s*(?:م²|م2|متر|م)?',
+    ]
+    for pattern in patterns:
+        for m in re.finditer(pattern, text):
+            value = int(m.group(1).replace(",", ""))
+            if 20 <= value <= 2000 and value not in vals:
+                vals.append(value)
+    return sum(vals) if vals else None
+
+def area_breakdown(row, ft):
+    """يفصل مساحة القوشان عن المساحات الخارجية عندما يذكرها العنوان بوضوح."""
+    title = _ar2en(row.get("title", ""))
+    advertised = row.get("size")
+    deed = _first_area([
+        r'(?:على|ع)\s*(?:القوشان|الكوشان)\D{0,18}([\d,]{2,4})',
+        r'(?:مساحة\s*)?(?:القوشان|الكوشان)\D{0,18}([\d,]{2,4})',
+        r'(?:مساحة\s*)?(?:داخلي|داخلية|داخليه)\D{0,18}([\d,]{2,4})',
+        r'(?:مساحة\s*)?(?:الشقة|الشقه)\D{0,18}([\d,]{2,4})',
+    ], title)
+    external = _external_areas(title)
+
+    if deed and advertised and advertised > deed and not external:
+        external = advertised - deed
+
+    risk_words = ["حديقة", "حدائق", "ترس", "تراس", "تراسات", "روف", "رووف", "سطح", "خارجي", "خارجية", "خارجيه"]
+    has_area_risk = ft == "روف" or any(w in title for w in risk_words)
+
+    pricing_size = deed or advertised
+    if deed:
+        confidence = "deed_area_extracted"
+        basis = "مساحة القوشان/الداخلية"
+        note = "تم استخراج مساحة داخلية/قوشان من نص الإعلان؛ راجع السند قبل الشراء."
+    elif has_area_risk and advertised:
+        confidence = "needs_area_verification"
+        basis = "المساحة المعلنة"
+        note = "المساحة قد تشمل روف/ترس/حديقة أو مساحة استعمال؛ يجب تأكيد مساحة القوشان."
+    elif advertised:
+        confidence = "advertised_area_only"
+        basis = "المساحة المعلنة"
+        note = "لم يظهر فصل بين مساحة القوشان والمساحات الخارجية في العنوان."
+    else:
+        confidence = "missing_area"
+        basis = "غير محدد"
+        note = "المساحة غير كافية لحساب سعر متر موثوق."
+
+    out = dict(row)
+    out.update(advertised_size=advertised, internal_size=deed or "",
+               external_size=external or "", size=pricing_size,
+               price_per_sqm_basis=basis, area_confidence=confidence,
+               area_note=note)
+    return out
+
 def ok(p, s):
     return p and s and 40 <= s <= 1500 and p >= 20000 and 150 <= p / s <= 5000 and not (p == 450000 and s == 325)
 def q(v, x):
@@ -226,7 +292,7 @@ def run():
             k = (r["title"][:50], r["price"])
             if k in seen: continue
             seen.add(k)
-            floor_rows.append(dict(r, area=name, ft=ft))
+            floor_rows.append(dict(area_breakdown(r, ft), area=name, ft=ft))
 
     # إحصاء الأرضي/الروف لكل منطقة (للترتيب والشرائح والأعمدة)
     areastats = {}
@@ -250,7 +316,11 @@ def run():
     for r in floor_rows:
         p, s, name, ft = r["price"], r["size"], r["area"], r["ft"]
         rec = dict(area=name, area_tier=(areastats.get(name, {}).get("tier", "")), ft=ft,
-                   size=s, price=p, src=r["source"], title=r["title"], url=r.get("url", ""))
+                   size=s, advertised_size=r.get("advertised_size", ""),
+                   internal_size=r.get("internal_size", ""), external_size=r.get("external_size", ""),
+                   price_per_sqm_basis=r.get("price_per_sqm_basis", ""),
+                   area_confidence=r.get("area_confidence", ""), area_note=r.get("area_note", ""),
+                   price=p, src=r["source"], title=r["title"], url=r.get("url", ""))
         if ok(p, s):
             ppm = round(p / s); rec["ppm"] = ppm
             k = (name, ft)

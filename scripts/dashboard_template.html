@@ -56,7 +56,7 @@ a{color:var(--orange);text-decoration:none}a:hover{text-decoration:underline}
  <input id="f-q" placeholder="بحث في العنوان..." style="flex:1;min-width:160px">
 </div>
 <div class="tbl-wrap"><table id="tbl"><thead><tr>
- <th data-k="area">المنطقة</th><th data-k="ft">النوع</th><th data-k="size">م²</th>
+ <th data-k="area">المنطقة</th><th data-k="ft">النوع</th><th data-k="size">م² التسعير</th>
  <th data-k="price">السعر</th><th data-k="ppm">سعر/م²</th><th data-k="ev">التقييم</th>
  <th data-k="fair">العادل المقدّر</th><th data-k="diff">فرق%</th><th data-k="src">المصدر</th><th>العنوان</th>
 </tr></thead><tbody></tbody></table></div></div>
@@ -73,7 +73,7 @@ document.getElementById('k-deal').textContent=DATA.listings.filter(x=>String(x.e
 // top deals
 const deals=DATA.listings.filter(x=>x.url&&(String(x.ev).startsWith('🟢')||String(x.ev).startsWith('✅'))&&x.warn===0&&Number.isInteger(x.diff)).sort((a,b)=>a.diff-b.diff).slice(0,10);
 const dl=document.getElementById('deals');
-dl.innerHTML=deals.length?deals.map(x=>`<div class="deal"><div><a href="${x.url}" target="_blank">${x.title}</a><div class="muted" style="font-size:12px">${x.area} · ${x.ft} · ${fmt(x.size)}م² · ${fmt(x.price)} دينار</div></div><div class="r">${fmt(x.ppm)}/م²<br><span style="font-size:11px">${x.diff}% عن العادل</span></div></div>`).join(''):'<span class="muted">لا توجد فرص مطابقة اليوم.</span>';
+ dl.innerHTML=deals.length?deals.map(x=>`<div class="deal"><div><a href="${x.url}" target="_blank">${x.title}</a><div class="muted" style="font-size:12px">${x.area} · ${x.ft} · ${fmt(x.size)}م² ${x.price_per_sqm_basis||'المساحة المعلنة'}${x.external_size?` · خارجي/استعمال ${fmt(x.external_size)}م²`:''} · ${fmt(x.price)} دينار</div></div><div class="r">${fmt(x.ppm)}/م²<br><span style="font-size:11px">${x.diff}% عن العادل</span></div></div>`).join(''):'<span class="muted">لا توجد فرص مطابقة اليوم.</span>';
 // bars
 const bars=document.getElementById('bars');
 DATA.areas.forEach(a=>{const w=Math.round(a.med/DATA.maxmed*100);
@@ -94,7 +94,9 @@ function render(){
  document.getElementById('cnt').textContent=r.length+' إعلان';
  tb.innerHTML=r.map(x=>{const d=(x.diff!==''&&!isNaN(x.diff))?`<span class="${x.diff<0?'diff-neg':'diff-pos'}">${x.diff>0?'+':''}${x.diff}%</span>`:'—';
   const ttl=x.url?`<a href="${x.url}" target="_blank">${x.title}</a>`:x.title;
-  return `<tr><td>${x.area}</td><td>${x.ft}</td><td>${fmt(x.size)}</td><td>${fmt(x.price)}</td><td><b>${fmt(x.ppm)}</b>${warnIcon(x)}</td><td>${badge(x.ev)}</td><td>${fmt(x.fair)}</td><td>${d}</td><td class="muted">${x.src}</td><td>${ttl}</td></tr>`;}).join('');
+  const sizeNote=x.area_confidence==='needs_area_verification'?'<span class="chip">تحقق القوشان</span>':(x.internal_size?'<span class="chip">قوشان/داخلي</span>':'');
+  const ext=x.external_size?`<div class="muted" style="font-size:11px">خارجي/استعمال ${fmt(x.external_size)}م²</div>`:'';
+  return `<tr><td>${x.area}</td><td>${x.ft}</td><td>${fmt(x.size)} ${sizeNote}${ext}</td><td>${fmt(x.price)}</td><td><b>${fmt(x.ppm)}</b>${warnIcon(x)}</td><td>${badge(x.ev)}</td><td>${fmt(x.fair)}</td><td>${d}</td><td class="muted">${x.src}</td><td>${ttl}</td></tr>`;}).join('');
 }
 document.querySelectorAll('#tbl th[data-k]').forEach(th=>th.onclick=()=>{const k=th.dataset.k;sortDir=(sortK===k)?-sortDir:1;sortK=k;render();});
 ['f-area','f-ft','f-ev','f-q'].forEach(id=>document.getElementById(id).addEventListener('input',render));
