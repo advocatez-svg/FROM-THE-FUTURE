@@ -39,6 +39,10 @@ python3 scripts/pipeline.py            # يحدّث dashboard.html + data/
 python3 scripts/telegram_send.py
 # أو الإرسال فعلياً:
 TELEGRAM_BOT_TOKEN=xxx TELEGRAM_CHAT_ID=yyy python3 scripts/telegram_send.py
+
+# أمر منفصل لشقق الطوابق الأخرى، لا يلمس نظام الأرضي/الروف:
+python3 scripts/pipeline_standard_floors.py
+python3 scripts/telegram_send_standard_floors.py
 ```
 
 ## 📤 نشر الداشبورد (اختياري)
@@ -51,6 +55,9 @@ TELEGRAM_BOT_TOKEN=xxx TELEGRAM_CHAT_ID=yyy python3 scripts/telegram_send.py
   - تشمل الآن رقم الهاتف ونوع المعلن عند توفرهما من صفحة الإعلان الأصلية.
 - `data/listings.json` — كل إعلانات الأرضي/الروف مع التقييم.
 - `data/summary.json` — ملخّص المناطق والمتوسطات.
+- `data/standard_floor_top_deals.json` — أفضل فرص شقق الطوابق الأخرى.
+- `data/standard_floor_listings.json` — كل إعلانات شقق الطوابق الأخرى مع التقييم.
+- `data/standard_floor_summary.json` — ملخّص شقق الطوابق الأخرى.
 
 ## 📐 قاعدة المساحات
 
@@ -68,3 +75,4 @@ TELEGRAM_BOT_TOKEN=xxx TELEGRAM_CHAT_ID=yyy python3 scripts/telegram_send.py
 - **عدد الفرص / معايير الفرصة:** في `scripts/pipeline.py` دالة `run()` (المتغيّر `top` والشرط `diff <= -5`).
 - **المناطق:** عدّل قائمة `AREAS` في أعلى `pipeline.py`.
 - **حدود السحب:** يمكن ضبط `FETCH_TRIES` و`FETCH_TIMEOUT` و`SCRAPE_MAX_PAGES` إذا كان أحد المصادر بطيئاً أو يحجب الطلبات.
+- **شقق الطوابق الأخرى:** استخدم workflow `فرص شقق الطوابق الأخرى (يدوي)` أو السكربت `scripts/pipeline_standard_floors.py`.
