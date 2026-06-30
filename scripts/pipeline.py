@@ -33,6 +33,54 @@ def fetch(url, tries=4):
             time.sleep(1.5 * (a + 1))
     return ""
 
+def normalize_phone(value):
+    digits = re.sub(r"\D+", "", value or "")
+    if digits.startswith("00962"):
+        digits = "0" + digits[5:]
+    elif digits.startswith("962"):
+        digits = "0" + digits[3:]
+    elif digits.startswith("7") and len(digits) == 9:
+        digits = "0" + digits
+    return digits if re.fullmatch(r"07[789]\d{7}", digits) else ""
+
+def contact_details(url, source, title=""):
+    details = {
+        "phone": "",
+        "advertiser_type": "غير محدد",
+        "contact_note": "رقم الهاتف ونوع المعلن غير متوفرين في البيانات المستخرجة"
+    }
+    if not url:
+        return details
+
+    h = fetch(url, tries=2)
+    phones = []
+    for match in re.findall(r'tel:([^"\'<>\s]+)', h, flags=re.I):
+        phone = normalize_phone(match)
+        if phone and phone not in phones:
+            phones.append(phone)
+    if not phones:
+        for match in re.findall(r'(?:\+?962|00962|0)?7[789][\d\s\-]{7,12}', h):
+            phone = normalize_phone(match)
+            if phone and phone not in phones:
+                phones.append(phone)
+
+    text = re.sub(r"<[^>]+>", " ", h)
+    probe = f"{title} {text[:8000]}"
+    if any(k in probe for k in ["عمولة", "وسيط", "مكتب", "شركة عقارية", "مستشارك العقاري"]):
+        advertiser_type = "وسيط / مكتب عقاري"
+    elif any(k in probe for k in ["المالك مباشرة", "من المالك", "مالك مباشر"]):
+        advertiser_type = "مالك مباشر"
+    elif source == "Bayut" or "qoshan.com" in url:
+        advertiser_type = "وسيط / منصة عقارية"
+    else:
+        advertiser_type = "غير محدد"
+
+    if phones:
+        details["phone"] = phones[0]
+        details["contact_note"] = "تم استخراج رقم الهاتف من صفحة الإعلان الأصلية"
+    details["advertiser_type"] = advertiser_type
+    return details
+
 # ---------- قوشان (Houzez) ----------
 def scrape_qoshan(slug, maxp=20):
     base = "https://qoshan.com/city/" + urllib.parse.quote(slug) + "/"
@@ -225,6 +273,8 @@ def run():
              and x.get("warn") == 0 and isinstance(x.get("diff"), int)]
     deals.sort(key=lambda x: x["diff"])
     top = deals[:10]   # يرسل المتاح فقط إن كان أقل من 10
+    for deal in top:
+        deal.update(contact_details(deal.get("url", ""), deal.get("src", ""), deal.get("title", "")))
 
     today = datetime.date.today().isoformat()
     summary = dict(date=today, total_floor=len(listings),

@@ -30,6 +30,8 @@ def build_message():
             f"<b>{i}. {esc(d['area'])} · {esc(d['ft'])}</b>\n"
             f"   {d['size']}م² · {int(d['price']):,} دينار · <b>{d['ppm']}/م²</b>\n"
             f"   🟢 أرخص بـ <b>{abs(d['diff'])}%</b> من السعر العادل (~{int(d['fair']):,})\n"
+            f"   👤 {esc(d.get('advertiser_type', 'غير محدد'))}"
+            f"{' · 📞 ' + esc(d.get('phone')) if d.get('phone') else ''}\n"
             f"   {t}\n")
     if DASH:
         lines.append(f"📊 الداشبورد الكامل: {esc(DASH)}")
