@@ -24,9 +24,11 @@
 | `TELEGRAM_CHAT_ID`   | معرّف الدردشة/القناة |
 
 (اختياري) في تبويب **Variables** أضف `DASHBOARD_URL` = رابط الداشبورد المنشور (مثلاً عبر GitHub Pages) ليظهر في الرسالة.
+(اختياري) أضف `FACEBOOK_GROUP_URL` = رابط مجموعة فيسبوك. إن لم يُضبط، يستخدم السكربت:
+`https://www.facebook.com/groups/JordanPropertyGroup`
 
 ### 4) فعّل الجدولة
-- الـ workflow يعمل تلقائياً يومياً 06:00 UTC (≈ 09:00 عمّان).
+- الـ workflow يعمل تلقائياً يومياً 17:00 UTC (≈ 20:00 عمّان).
 - لتغيير الوقت: عدّل `cron` في `.github/workflows/daily-deals.yml`.
 - للتشغيل الفوري للتجربة: تبويب **Actions** → الـ workflow → **Run workflow**.
 

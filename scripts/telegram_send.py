@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 """يرسل أفضل 10 فرص (data/top_deals.json) إلى تيليجرام عبر Bot API.
 المتغيرات المطلوبة: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
-اختياري: DASHBOARD_URL (رابط الداشبورد المنشور)."""
+اختياري: DASHBOARD_URL (رابط الداشبورد المنشور), FACEBOOK_GROUP_URL (رابط مجموعة فيسبوك)."""
 import json, os, html, urllib.request, urllib.parse, urllib.error, datetime
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 CHAT  = os.environ.get("TELEGRAM_CHAT_ID", "")
 DASH  = os.environ.get("DASHBOARD_URL", "")
+FACEBOOK_GROUP = os.environ.get("FACEBOOK_GROUP_URL", "https://www.facebook.com/groups/JordanPropertyGroup")
 
 def esc(s): return html.escape(str(s))
 
@@ -35,6 +36,8 @@ def build_message():
             f"   {t}\n")
     if DASH:
         lines.append(f"📊 الداشبورد الكامل: {esc(DASH)}")
+    if FACEBOOK_GROUP:
+        lines.append(f"📘 مجموعة فيسبوك: {esc(FACEBOOK_GROUP)}")
     lines.append("\n<i>أسعار عرض — السعر النهائي غالباً أقل بـ 5–15%. للاسترشاد.</i>")
     return "\n".join(lines)
 
