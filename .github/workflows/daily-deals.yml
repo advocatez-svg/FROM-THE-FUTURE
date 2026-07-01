@@ -1,7 +1,8 @@
-name: تحديث الداشبورد وأفضل الفرص (يومياً 8 مساءً)
+name: تحديث الداشبورد وأفضل الفرص (مرتين يومياً)
 on:
   schedule:
-    - cron: '0 17 * * *'        # يومياً 17:00 UTC = 20:00 مساءً بتوقيت عمّان
+    - cron: '0 10 * * *'        # 13:00 Asia/Amman
+    - cron: '0 20 * * *'        # 23:00 Asia/Amman
   workflow_dispatch: {}         # تشغيل يدوي عند الحاجة
 permissions:
   contents: write

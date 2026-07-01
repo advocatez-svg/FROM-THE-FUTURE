@@ -1,6 +1,9 @@
-name: فرص شقق الطوابق الأخرى (يدوي)
+name: فرص شقق الطوابق الأخرى (مرتين يومياً + يدوي)
 
 on:
+  schedule:
+    - cron: '0 10 * * *'        # 13:00 Asia/Amman
+    - cron: '0 20 * * *'        # 23:00 Asia/Amman
   workflow_dispatch:
     inputs:
       send_telegram:
