@@ -39,7 +39,7 @@ def standard_floor_type(title):
     for key, label in FLOOR_LABELS:
         if key in title:
             return label
-    return "طابق عادي"
+    return "الطابق غير مذكور"
 
 
 def collect_rows():
