@@ -9,8 +9,6 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from telegram_send import area_lines
-
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 CHAT = os.environ.get("TELEGRAM_CHANNEL_ID") or os.environ.get("TELEGRAM_CHAT_ID", "")
@@ -29,6 +27,10 @@ def _load_json(name):
     return json.load(open(os.path.join(ROOT, "data", name), encoding="utf-8"))
 
 
+def _display_size(deal):
+    return deal.get("internal_size") or deal.get("advertised_size") or deal.get("size") or ""
+
+
 def build_message():
     all_deals = _load_json("middle_class_top_deals.json")
     deals = all_deals
@@ -43,18 +45,17 @@ def build_message():
     try:
         summary = _load_json("middle_class_summary.json")
         date = summary.get("date", "")
-        price_min = int(summary.get("price_min", 0))
-        price_max = int(summary.get("price_max", 0))
     except Exception:
         date = datetime.date.today().isoformat()
-        price_min = 35000
-        price_max = 150000
+
+    headline_count = len(all_deals) if BATCH_INDEX == "" else len(deals)
+    headline = f"أفضل {headline_count} فرص شقق مختارة — عمّان"
+    if batch_label:
+        headline = f"أفضل فرص شقق مختارة — عمّان{batch_label}"
 
     lines = [
-        f"🏘️ <b>شقق مختارة في عمّان{batch_label}</b>",
+        f"🏙️ <b>{headline}</b>",
         f"📅 {esc(date)}",
-        f"📍 شقق مختارة في المناطق التالية: شفا بدران، الجبيهة، تلاع العلي",
-        f"💰 نطاق السعر: {price_min:,} إلى {price_max:,} دينار",
         "",
     ]
     if not deals:
@@ -65,9 +66,8 @@ def build_message():
             title = f'<a href="{esc(d["url"])}">{title}</a>'
         lines.append(
             f"<b>{i}. {esc(d['area'])} · {esc(d['ft'])}</b>\n"
-            f"   💰 {int(d['price']):,} دينار\n"
-            f"{area_lines(d)}\n"
-            f"   🟢 أقل بـ <b>{abs(d['diff'])}%</b> من السعر العادل التقديري (~{int(d['fair']):,})\n"
+            f"   {esc(_display_size(d))}م² · {int(d['price']):,} دينار · {esc(d.get('ppm', ''))}/م²\n"
+            f"   🟢 أرخص بـ <b>{abs(d['diff'])}%</b> من السعر العادل (~{int(d['fair']):,})\n"
             f"   👤 {esc(d.get('advertiser_type', 'غير محدد'))}"
             f"{' · 📞 ' + esc(d.get('phone')) if d.get('phone') else ''}\n"
             f"   {title}\n"
@@ -76,10 +76,7 @@ def build_message():
         lines.append(f"📊 الداشبورد الكامل: {esc(DASH)}")
     if FACEBOOK_GROUP:
         lines.append(f"📘 مجموعة فيسبوك: {esc(FACEBOOK_GROUP)}")
-    lines.append(
-        "\n<i>هذه قراءة أولية مقارنة بالسعر العادل التقديري للطبقة المتوسطة، وليست تقييما عقاريا نهائيا. "
-        "يجب تأكيد القوشان، المساحة الداخلية، حالة البناء، والموقع الفعلي قبل أي قرار.</i>"
-    )
+    lines.append("\n<i>أسعار عرض — السعر النهائي غالباً أقل بـ 5–15%. للاسترشاد.</i>")
     return "\n".join(lines)
 
 
