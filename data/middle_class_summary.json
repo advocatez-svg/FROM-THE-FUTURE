@@ -1,0 +1,37 @@
+{
+ "date": "2026-07-08",
+ "segment": "middle_class",
+ "segment_ar": "الطبقة المتوسطة",
+ "total_middle_class_listings": 270,
+ "top_limit": 15,
+ "price_min": 35000,
+ "price_max": 150000,
+ "size_min": 75,
+ "size_max": 260,
+ "areas": [
+  {
+   "name": "الجبيهة",
+   "med": 531,
+   "n": 124,
+   "q1": 471,
+   "q3": 616,
+   "tier": "متوسطة"
+  },
+  {
+   "name": "تلاع العلي",
+   "med": 650,
+   "n": 67,
+   "q1": 508,
+   "q3": 707,
+   "tier": "متوسطة"
+  },
+  {
+   "name": "شفا بدران",
+   "med": 481,
+   "n": 75,
+   "q1": 442,
+   "q3": 519,
+   "tier": "متوسطة"
+  }
+ ]
+}
