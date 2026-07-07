@@ -38,6 +38,22 @@ def fetch(url, tries=None):
             time.sleep(1.5 * (a + 1))
     return ""
 
+def fetch_html(url, tries=None):
+    tries = tries or FETCH_TRIES
+    for a in range(tries):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept-Language": "ar,en;q=0.9"})
+            with urllib.request.urlopen(req, timeout=FETCH_TIMEOUT) as r:
+                return r.read().decode("utf-8", "replace")
+        except urllib.error.HTTPError as e:
+            try:
+                return e.read().decode("utf-8", "replace")
+            except Exception:
+                return ""
+        except Exception:
+            time.sleep(1.5 * (a + 1))
+    return ""
+
 def normalize_phone(value):
     digits = re.sub(r"\D+", "", value or "")
     if digits.startswith("00962"):
@@ -186,20 +202,60 @@ def scrape_opensooq(slug, maxp=None):
             urllib.parse.quote("شقق-للبيع"))
     out = {}
     for p in range(1, maxp + 1):
-        h = fetch(base + (f"?page={p}" if p > 1 else ""))
+        h = fetch_html(base + (f"?page={p}" if p > 1 else ""))
         if not h: break
-        pairs = re.findall(r'"name":"([^"]{6,160})".{0,1500}?"price":(\d+),"priceCurrency":"JOD"', h)
         new = 0
-        for name, price in pairs:
-            tt = _ar2en(name)
-            m = re.search(r'مساح\w*\s*([\d,]+)\s*م', tt) or re.search(r'(?<!\d)([\d]{2,4})\s*م(?:تر)?\b', tt)
+        next_data = re.search(r'<script id="__NEXT_DATA__" type="application/json">(.*?)</script>', h)
+        items = []
+        if next_data:
+            try:
+                payload = json.loads(next_data.group(1))
+                items = payload["props"]["pageProps"]["serpApiResponse"]["listings"]["items"]
+            except Exception:
+                items = []
+        for item in items:
+            name = item.get("title") or ""
+            price_text = item.get("price_amount") or ""
+            price_digits = re.sub(r"\D+", "", _ar2en(price_text))
+            if not name or not price_digits:
+                continue
+            tt = _ar2en(" ".join([name, item.get("highlights") or "", " ".join(item.get("cps") or [])]))
+            m = re.search(r'المساحة:\s*([\d,]+)\s*م', tt) or re.search(r'مساح\w*\s*([\d,]+)\s*م', tt) or re.search(r'(?<!\d)([\d]{2,4})\s*م(?:تر)?\b', tt)
             if not m: continue
-            size = int(m.group(1).replace(",", "")); price = int(price)
+            size = int(m.group(1).replace(",", "")); price = int(price_digits)
             if not (30 <= size <= 2000 and price >= 5000): continue
-            key = (name[:60], price)
+            url = item.get("post_url") or ""
+            if url.startswith("/"):
+                url = "https://jo.opensooq.com/ar" + url
+            phone = item.get("phone_number") or ""
+            phone_complete = normalize_phone(phone)
+            is_shop = bool(item.get("shop_name")) or "شركة" in (item.get("member_display_name") or "")
+            advertiser_type = "وسيط / منصة عقارية" if is_shop else "مالك مباشر / معلن فردي"
+            key = (item.get("id") or name[:60], price)
             if key not in out:
-                out[key] = dict(price=price, size=size, title=name, url="")
+                out[key] = dict(
+                    price=price,
+                    size=size,
+                    title=name,
+                    url=url,
+                    phone=phone_complete,
+                    masked_phone=(phone if not phone_complete else ""),
+                    advertiser_type=advertiser_type,
+                    contact_note=("رقم الهاتف ظاهر كاملا في بيانات السوق المفتوح" if phone_complete else "رقم الهاتف مخفي جزئيا في نتائج السوق المفتوح؛ يظهر كاملا داخل صفحة الإعلان أو بعد تسجيل الدخول"),
+                )
                 new += 1
+        if not items:
+            pairs = re.findall(r'"name":"([^"]{6,160})".{0,1500}?"url":"([^"]+)".{0,1500}?"price":(\d+),"priceCurrency":"JOD"', h)
+            for name, url, price in pairs:
+                tt = _ar2en(name)
+                m = re.search(r'مساح\w*\s*([\d,]+)\s*م', tt) or re.search(r'(?<!\d)([\d]{2,4})\s*م(?:تر)?\b', tt)
+                if not m: continue
+                size = int(m.group(1).replace(",", "")); price = int(price)
+                if not (30 <= size <= 2000 and price >= 5000): continue
+                key = (url, price)
+                if key not in out:
+                    out[key] = dict(price=price, size=size, title=name, url=url, phone="", masked_phone="", advertiser_type="غير محدد")
+                    new += 1
         if p > 1 and new == 0: break
         time.sleep(0.3)
     return list(out.values())

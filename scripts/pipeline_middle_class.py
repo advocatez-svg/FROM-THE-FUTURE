@@ -146,6 +146,7 @@ def select_deals(listings):
         x for x in listings
         if x.get("middle_class_fit")
         and x.get("url")
+        and x.get("phone")
         and x.get("ev", "").startswith(("🟢", "✅"))
         and x.get("warn") == 0
         and isinstance(x.get("diff"), int)
