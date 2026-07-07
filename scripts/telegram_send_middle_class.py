@@ -67,7 +67,7 @@ def build_message():
             f"<b>{i}. {esc(d['area'])} · {esc(d['ft'])}</b>\n"
             f"   💰 {int(d['price']):,} دينار\n"
             f"{area_lines(d)}\n"
-            f"   🟢 أقل بـ <b>{abs(d['diff'])}%</b> من مرجع أسعار العرض (~{int(d['fair']):,})\n"
+            f"   🟢 أقل بـ <b>{abs(d['diff'])}%</b> من السعر العادل التقديري (~{int(d['fair']):,})\n"
             f"   👤 {esc(d.get('advertiser_type', 'غير محدد'))}"
             f"{' · 📞 ' + esc(d.get('phone')) if d.get('phone') else ''}\n"
             f"   {title}\n"
@@ -77,7 +77,7 @@ def build_message():
     if FACEBOOK_GROUP:
         lines.append(f"📘 مجموعة فيسبوك: {esc(FACEBOOK_GROUP)}")
     lines.append(
-        "\n<i>هذه قراءة أولية لأسعار العرض للطبقة المتوسطة، وليست تقييما عقاريا نهائيا. "
+        "\n<i>هذه قراءة أولية مقارنة بالسعر العادل التقديري للطبقة المتوسطة، وليست تقييما عقاريا نهائيا. "
         "يجب تأكيد القوشان، المساحة الداخلية، حالة البناء، والموقع الفعلي قبل أي قرار.</i>"
     )
     return "\n".join(lines)
