@@ -12,7 +12,7 @@ from pipeline_standard_floors import standard_floor_type
 ROOT = base.ROOT
 DATA = base.DATA
 
-TOP_LIMIT = int(os.environ.get("MIDDLE_CLASS_TOP_LIMIT", "15"))
+TOP_LIMIT = int(os.environ.get("MIDDLE_CLASS_TOP_LIMIT", "10"))
 PRICE_MIN = int(os.environ.get("MIDDLE_CLASS_PRICE_MIN", "35000"))
 PRICE_MAX = int(os.environ.get("MIDDLE_CLASS_PRICE_MAX", "150000"))
 SIZE_MIN = int(os.environ.get("MIDDLE_CLASS_SIZE_MIN", "75"))
@@ -113,6 +113,9 @@ def evaluate(rows):
             src=r["source"],
             title=r["title"],
             url=r.get("url", ""),
+            phone=r.get("phone", ""),
+            advertiser_type=r.get("advertiser_type", ""),
+            contact_note=r.get("contact_note", ""),
             middle_class_fit=False,
         )
         if base.ok(p, s) and name in stats:
@@ -142,6 +145,7 @@ def select_deals(listings):
     deals = [
         x for x in listings
         if x.get("middle_class_fit")
+        and x.get("url")
         and x.get("ev", "").startswith(("🟢", "✅"))
         and x.get("warn") == 0
         and isinstance(x.get("diff"), int)
@@ -149,7 +153,10 @@ def select_deals(listings):
     deals.sort(key=lambda x: (x["diff"], x.get("ppm") or 999999, x.get("price") or 999999))
     top = deals[:TOP_LIMIT]
     for deal in top:
-        deal.update(base.contact_details(deal.get("url", ""), deal.get("src", ""), deal.get("title", "")))
+        details = base.contact_details(deal.get("url", ""), deal.get("src", ""), deal.get("title", ""))
+        for key, value in details.items():
+            if value and (not deal.get(key) or deal.get(key) == "غير محدد"):
+                deal[key] = value
     return top
 
 

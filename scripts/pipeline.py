@@ -148,7 +148,29 @@ def scrape_bayut(slug, maxp=None):
             if "Apartments" not in cats: continue
             eid = it.get("externalID"); price = it.get("price"); area = it.get("area")
             if eid and price and area and eid not in out:
-                out[eid] = dict(price=price, size=area, title=it.get("title", ""), url="")
+                listing_slug = it.get("slug") or ""
+                phone_data = it.get("phoneNumber") or {}
+                phones = []
+                if isinstance(phone_data, dict):
+                    for value in phone_data.get("mobileNumbers", []) + phone_data.get("phoneNumbers", []):
+                        phone = normalize_phone(value)
+                        if phone and phone not in phones:
+                            phones.append(phone)
+                    for key in ("mobile", "phone"):
+                        phone = normalize_phone(phone_data.get(key, ""))
+                        if phone and phone not in phones:
+                            phones.append(phone)
+                agency = it.get("agency") or {}
+                agency_name = agency.get("name_l1") or agency.get("name") if isinstance(agency, dict) else ""
+                out[eid] = dict(
+                    price=price,
+                    size=area,
+                    title=it.get("title", ""),
+                    url=(f"https://www.bayut.jo/en/property/{listing_slug}.html" if listing_slug else ""),
+                    phone=(phones[0] if phones else ""),
+                    advertiser_type=("وسيط / منصة عقارية" if agency_name else "غير محدد"),
+                    contact_note=("تم استخراج رقم الهاتف من بيانات Bayut" if phones else "رقم الهاتف غير متوفر في البيانات المستخرجة"),
+                )
                 new += 1
         if p > 1 and new == 0: break
         time.sleep(0.3)
