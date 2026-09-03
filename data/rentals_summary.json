@@ -1,0 +1,106 @@
+{
+ "date": "2026-09-03",
+ "areas": [
+  {
+   "name": "عبدون"
+  },
+  {
+   "name": "دابوق",
+   "furnished": {
+    "sample_size": 18,
+    "median_monthly_per_sqm": 5.91,
+    "q1_monthly_per_sqm": 5.0,
+    "q3_monthly_per_sqm": 7.42
+   },
+   "unfurnished": {
+    "sample_size": 1,
+    "median_monthly_per_sqm": 4.17,
+    "q1_monthly_per_sqm": 4.17,
+    "q3_monthly_per_sqm": 4.17
+   }
+  },
+  {
+   "name": "دير غبار",
+   "furnished": {
+    "sample_size": 70,
+    "median_monthly_per_sqm": 5.97,
+    "q1_monthly_per_sqm": 5.0,
+    "q3_monthly_per_sqm": 6.98
+   },
+   "unfurnished": {
+    "sample_size": 1,
+    "median_monthly_per_sqm": 2.38,
+    "q1_monthly_per_sqm": 2.38,
+    "q3_monthly_per_sqm": 2.38
+   }
+  },
+  {
+   "name": "خلدا",
+   "furnished": {
+    "sample_size": 34,
+    "median_monthly_per_sqm": 4.7,
+    "q1_monthly_per_sqm": 3.58,
+    "q3_monthly_per_sqm": 5.79
+   },
+   "unfurnished": {
+    "sample_size": 1,
+    "median_monthly_per_sqm": 6.94,
+    "q1_monthly_per_sqm": 6.94,
+    "q3_monthly_per_sqm": 6.94
+   }
+  },
+  {
+   "name": "أم السماق",
+   "furnished": {
+    "sample_size": 19,
+    "median_monthly_per_sqm": 4.31,
+    "q1_monthly_per_sqm": 3.57,
+    "q3_monthly_per_sqm": 6.06
+   },
+   "unfurnished": {
+    "sample_size": 1,
+    "median_monthly_per_sqm": 3.67,
+    "q1_monthly_per_sqm": 3.67,
+    "q3_monthly_per_sqm": 3.67
+   }
+  },
+  {
+   "name": "ضاحية النخيل"
+  },
+  {
+   "name": "طريق المطار",
+   "furnished": {
+    "sample_size": 2,
+    "median_monthly_per_sqm": 5.04,
+    "q1_monthly_per_sqm": 4.6,
+    "q3_monthly_per_sqm": 5.47
+   }
+  },
+  {
+   "name": "حي الصحابة"
+  },
+  {
+   "name": "الجبيهة",
+   "furnished": {
+    "sample_size": 3,
+    "median_monthly_per_sqm": 4.5,
+    "q1_monthly_per_sqm": 3.64,
+    "q3_monthly_per_sqm": 5.12
+   },
+   "unfurnished": {
+    "sample_size": 1,
+    "median_monthly_per_sqm": 1.11,
+    "q1_monthly_per_sqm": 1.11,
+    "q3_monthly_per_sqm": 1.11
+   }
+  },
+  {
+   "name": "شفا بدران"
+  }
+ ],
+ "total_listings": 520,
+ "furnished_count": 147,
+ "unfurnished_count": 5,
+ "unknown_furnishing_count": 368,
+ "top_per_type": 10
+}
