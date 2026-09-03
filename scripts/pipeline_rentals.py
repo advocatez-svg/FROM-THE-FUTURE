@@ -441,7 +441,6 @@ def run():
         "unfurnished_count": sum(row["furnishing"] == "غير مفروشة" for row in listings),
         "unknown_furnishing_count": sum(row["furnishing"] == "غير محدد" for row in listings),
         "top_per_type": TOP_PER_TYPE,
-        "telegram_delivery": False,
     }
     for area, _, _, _ in base.AREAS:
         area_stats = {"name": area}
