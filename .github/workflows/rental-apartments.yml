@@ -1,6 +1,11 @@
 name: تحديث إيجارات عمّان (مرتين يومياً)
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/rental-apartments.yml"
+      - "scripts/pipeline_rentals.py"
   schedule:
     - cron: '0 9 * * *'   # 12:00 Asia/Amman
     - cron: '0 19 * * *'  # 22:00 Asia/Amman
