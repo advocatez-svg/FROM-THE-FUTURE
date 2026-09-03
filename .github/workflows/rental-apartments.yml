@@ -1,4 +1,5 @@
 name: تحديث إيجارات عمّان (مرتين يومياً)
+# Initial collection is triggered when this workflow reaches main.
 
 on:
   push:
