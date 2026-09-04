@@ -1,5 +1,5 @@
 {
- "date": "2026-09-03",
+ "date": "2026-09-04",
  "areas": [
   {
    "name": "عبدون"
@@ -98,9 +98,9 @@
    "name": "شفا بدران"
   }
  ],
- "total_listings": 521,
+ "total_listings": 520,
  "furnished_count": 147,
  "unfurnished_count": 5,
- "unknown_furnishing_count": 369,
+ "unknown_furnishing_count": 368,
  "top_per_type": 10
 }
