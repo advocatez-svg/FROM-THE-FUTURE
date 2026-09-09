@@ -22,10 +22,10 @@
   {
    "name": "دير غبار",
    "furnished": {
-    "sample_size": 67,
-    "median_monthly_per_sqm": 6.0,
+    "sample_size": 68,
+    "median_monthly_per_sqm": 5.97,
     "q1_monthly_per_sqm": 5.0,
-    "q3_monthly_per_sqm": 6.94
+    "q3_monthly_per_sqm": 6.89
    },
    "unfurnished": {
     "sample_size": 1,
@@ -37,10 +37,10 @@
   {
    "name": "خلدا",
    "furnished": {
-    "sample_size": 33,
-    "median_monthly_per_sqm": 4.76,
-    "q1_monthly_per_sqm": 3.54,
-    "q3_monthly_per_sqm": 5.83
+    "sample_size": 34,
+    "median_monthly_per_sqm": 4.7,
+    "q1_monthly_per_sqm": 3.58,
+    "q3_monthly_per_sqm": 5.79
    },
    "unfurnished": {
     "sample_size": 1,
@@ -98,9 +98,9 @@
    "name": "شفا بدران"
   }
  ],
- "total_listings": 525,
- "furnished_count": 143,
+ "total_listings": 515,
+ "furnished_count": 145,
  "unfurnished_count": 5,
- "unknown_furnishing_count": 377,
+ "unknown_furnishing_count": 365,
  "top_per_type": 10
 }
