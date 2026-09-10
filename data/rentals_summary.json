@@ -1,5 +1,5 @@
 {
- "date": "2026-09-09",
+ "date": "2026-09-10",
  "areas": [
   {
    "name": "عبدون"
@@ -22,10 +22,10 @@
   {
    "name": "دير غبار",
    "furnished": {
-    "sample_size": 68,
-    "median_monthly_per_sqm": 5.97,
+    "sample_size": 67,
+    "median_monthly_per_sqm": 6.0,
     "q1_monthly_per_sqm": 5.0,
-    "q3_monthly_per_sqm": 6.89
+    "q3_monthly_per_sqm": 6.94
    },
    "unfurnished": {
     "sample_size": 1,
@@ -98,9 +98,9 @@
    "name": "شفا بدران"
   }
  ],
- "total_listings": 515,
- "furnished_count": 145,
+ "total_listings": 525,
+ "furnished_count": 144,
  "unfurnished_count": 5,
- "unknown_furnishing_count": 365,
+ "unknown_furnishing_count": 376,
  "top_per_type": 10
 }
