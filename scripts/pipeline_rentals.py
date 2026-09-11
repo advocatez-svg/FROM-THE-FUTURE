@@ -23,6 +23,7 @@ ROOT = base.ROOT
 DATA = base.DATA
 
 TOP_PER_TYPE = int(os.environ.get("RENTAL_TOP_PER_TYPE", "10"))
+TOP_PUBLISHABLE = int(os.environ.get("RENTAL_TOP_PUBLISHABLE", "21"))
 MIN_MONTHLY_RENT = int(os.environ.get("RENTAL_MIN_MONTHLY_RENT", "100"))
 MAX_MONTHLY_RENT = int(os.environ.get("RENTAL_MAX_MONTHLY_RENT", "10000"))
 MIN_SIZE = int(os.environ.get("RENTAL_MIN_SIZE", "30"))
@@ -348,15 +349,19 @@ def _quartile(values, fraction):
     return values[low] if low == high else values[low] + (values[high] - values[low]) * (index - low)
 
 
+def _comparison_group(furnishing):
+    return "مفروشة" if furnishing == "مفروشة" else "عادية"
+
+
 def evaluate(rows):
     stats = {}
     for area, _, _, _ in base.AREAS:
-        for furnishing in ("مفروشة", "غير مفروشة"):
+        for furnishing in ("مفروشة", "عادية"):
             values = [
                 row["monthly_price_per_sqm"]
                 for row in rows
                 if row["area"] == area
-                and row["furnishing"] == furnishing
+                and _comparison_group(row["furnishing"]) == furnishing
                 and row.get("monthly_price_per_sqm") is not None
             ]
             if values:
@@ -370,7 +375,7 @@ def evaluate(rows):
     evaluated = []
     for row in rows:
         item = dict(row)
-        reference = stats.get((item["area"], item["furnishing"]))
+        reference = stats.get((item["area"], _comparison_group(item["furnishing"])))
         rate = item.get("monthly_price_per_sqm")
         if reference and rate is not None:
             median = reference["median_monthly_per_sqm"]
@@ -405,11 +410,11 @@ def evaluate(rows):
     return stats, evaluated
 
 
-def select_deals(rows, furnishing):
+def _ranked_candidates(rows, include):
     candidates = [
         row
         for row in rows
-        if row["furnishing"] == furnishing
+        if include(row)
         and row.get("url")
         and row.get("monthly_price_per_sqm") is not None
         and row.get("difference_from_reference_pct") is not None
@@ -423,7 +428,22 @@ def select_deals(rows, furnishing):
             row["monthly_price"],
         )
     )
+    return candidates
+
+
+def select_deals(rows, furnishing):
+    candidates = _ranked_candidates(rows, lambda row: (
+        row
+        for row in rows
+        row["furnishing"] == furnishing
+        if furnishing == "مفروشة"
+        else row["furnishing"] != "مفروشة"
+    ))
     return candidates[:TOP_PER_TYPE]
+
+
+def select_publishable_deals(rows):
+    return _ranked_candidates(rows, lambda row: True)[:TOP_PUBLISHABLE]
 
 
 def run():
@@ -431,6 +451,8 @@ def run():
     stats, listings = evaluate(rows)
     furnished = select_deals(listings, "مفروشة")
     unfurnished = select_deals(listings, "غير مفروشة")
+    regular = select_deals(listings, "عادية")
+    publishable = select_publishable_deals(listings)
 
     today = datetime.date.today().isoformat()
     summary = {
@@ -439,6 +461,7 @@ def run():
         "total_listings": len(listings),
         "furnished_count": sum(row["furnishing"] == "مفروشة" for row in listings),
         "unfurnished_count": sum(row["furnishing"] == "غير مفروشة" for row in listings),
+        "regular_count": sum(row["furnishing"] != "مفروشة" for row in listings),
         "unknown_furnishing_count": sum(row["furnishing"] == "غير محدد" for row in listings),
         "top_per_type": TOP_PER_TYPE,
     }
@@ -446,7 +469,7 @@ def run():
         area_stats = {"name": area}
         for furnishing, key in (
             ("مفروشة", "furnished"),
-            ("غير مفروشة", "unfurnished"),
+            ("عادية", "regular"),
         ):
             reference = stats.get((area, furnishing))
             if reference:
@@ -457,16 +480,24 @@ def run():
     base.write_json("rentals_listings.json", listings)
     base.write_json("rentals_furnished_top_deals.json", furnished, indent=1)
     base.write_json("rentals_unfurnished_top_deals.json", unfurnished, indent=1)
+    base.write_json("rentals_regular_top_deals.json", regular, indent=1)
+    base.write_json("rentals_publishable_top_deals.json", publishable, indent=1)
     base.write_json(
         "rentals_top_deals.json",
-        {"furnished": furnished, "unfurnished": unfurnished},
+        {
+            "furnished": furnished,
+            "regular": regular,
+            "unfurnished": unfurnished,
+            "publishable": publishable,
+        },
         indent=1,
     )
 
     print(
         "DONE · rental listings: "
         f"{len(listings)} · furnished: {len(furnished)} · "
-        f"unfurnished: {len(unfurnished)} · date: {today}",
+        f"unfurnished: {len(unfurnished)} · regular: {len(regular)} · "
+        f"publishable: {len(publishable)} · date: {today}",
         flush=True,
     )
 
