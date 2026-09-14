@@ -432,14 +432,11 @@ def _ranked_candidates(rows, include):
 
 
 def select_deals(rows, furnishing):
-    candidates = _ranked_candidates(rows, lambda row: (
-        row
-        for row in rows
-        row["furnishing"] == furnishing
-        if furnishing == "مفروشة"
-        else row["furnishing"] != "مفروشة"
-    ))
-    return candidates[:TOP_PER_TYPE]
+    if furnishing == "مفروشة":
+        include = lambda row: row["furnishing"] == "مفروشة"
+    else:
+        include = lambda row: row["furnishing"] != "مفروشة"
+    return _ranked_candidates(rows, include)[:TOP_PER_TYPE]
 
 
 def select_publishable_deals(rows):
