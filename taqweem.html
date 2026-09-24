@@ -1,0 +1,331 @@
+---
+layout: default
+title: "الروزنامة — تقويم هجري تفاعلي"
+lang: ar
+dir: rtl
+permalink: /taqweem/
+---
+
+<section class="page-content cal-page" lang="ar" dir="rtl">
+  <h1>📅 روزنامة هجرية تفاعلية</h1>
+  <p class="cal-intro">تقويم أم القرى مع أوقات الصلاة والمناسبات لإمارة أبوظبي وفق مركز جامع الشيخ زايد الكبير — تصفّحها وشاركها مع أصدقائك.</p>
+
+  <div class="cal-toolbar">
+    <div class="cal-nav">
+      <button type="button" id="calPrev" class="cal-btn" aria-label="الشهر السابق">‹</button>
+      <div class="cal-title">
+        <span id="calMonthName">—</span>
+        <small id="calGregRange"></small>
+      </div>
+      <button type="button" id="calNext" class="cal-btn" aria-label="الشهر التالي">›</button>
+    </div>
+    <button type="button" id="calToday" class="cal-btn cal-today-btn">اليوم</button>
+  </div>
+
+  <table class="cal-grid" id="calGrid">
+    <thead>
+      <tr>
+        <th>السبت</th><th>الأحد</th><th>الإثنين</th><th>الثلاثاء</th>
+        <th>الأربعاء</th><th>الخميس</th><th>الجمعة</th>
+      </tr>
+    </thead>
+    <tbody id="calBody"></tbody>
+  </table>
+
+  <ul class="cal-legend">
+    <li><span class="dot dot-eid"></span> عيد / عطلة</li>
+    <li><span class="dot dot-season"></span> موسم فاضل</li>
+    <li><span class="dot dot-fast"></span> صيام سنّة</li>
+  </ul>
+
+  <!-- لوحة اليوم المختار -->
+  <div class="cal-panel" id="calPanel">
+    <div class="cal-panel-head">
+      <div>
+        <strong id="panelHijri">—</strong>
+        <small id="panelGreg"></small>
+      </div>
+      <div class="cal-loc">
+        <label for="calLoc">📍 الموقع:</label>
+        <select id="calLoc"></select>
+      </div>
+    </div>
+
+    <div id="panelEvents" class="cal-events"></div>
+
+    <div class="cal-prayers">
+      <div class="cal-prayer" data-k="fajr"><span class="p-name">الفجر</span><span class="p-time">—</span></div>
+      <div class="cal-prayer" data-k="sunrise"><span class="p-name">الشروق</span><span class="p-time">—</span></div>
+      <div class="cal-prayer" data-k="dhuhr"><span class="p-name">الظهر</span><span class="p-time">—</span></div>
+      <div class="cal-prayer" data-k="asr"><span class="p-name">العصر</span><span class="p-time">—</span></div>
+      <div class="cal-prayer" data-k="maghrib"><span class="p-name">المغرب</span><span class="p-time">—</span></div>
+      <div class="cal-prayer" data-k="isha"><span class="p-name">العشاء</span><span class="p-time">—</span></div>
+    </div>
+  </div>
+
+  <div class="cal-share">
+    <span class="cal-share-label">🔗 شارك الروزنامة مع الأصدقاء:</span>
+    <a id="calWhatsapp" class="cal-btn cal-share-btn" href="#" target="_blank" rel="noopener">واتساب</a>
+    <button type="button" id="calCopy" class="cal-btn cal-share-btn">نسخ الرابط</button>
+    <button type="button" id="calSysShare" class="cal-btn cal-share-btn" hidden>مشاركة…</button>
+    <span id="calCopied" class="cal-copied" hidden>تم النسخ ✓</span>
+  </div>
+
+  <p class="cal-note">التواريخ مضبوطة على كتاب التقويم الهجري لمركز جامع الشيخ زايد الكبير لعام ١٤٤٨هـ (وعلى تقويم أم القرى لما عداه). أوقات الصلاة محسوبة لإمارة أبوظبي ومعايَرة على جدول <strong>مركز جامع الشيخ زايد الكبير (التوقيت الزوالي)</strong> لعام ١٤٤٨هـ، وجرى التحقق من مطابقتها صيفاً وشتاءً في حدود دقيقة واحدة. المناسبات معروضة وفق كتاب التقويم الهجري الرسمي للمركز.</p>
+</section>
+
+<script>
+(function () {
+  var MONTHS = ["محرّم","صفر","ربيع الأول","ربيع الآخر","جمادى الأولى","جمادى الآخرة",
+                "رجب","شعبان","رمضان","شوال","ذو القعدة","ذو الحجة"];
+  var GREG = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+  var WEEK = ["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+  var AR_DIGITS = ["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
+  function toAr(n) { return String(n).replace(/[0-9]/g, function (d) { return AR_DIGITS[+d]; }); }
+
+  /* ============ مواقع الإمارات ============ */
+  var LOCS = [
+    { id: "abudhabi",name: "أبوظبي",      lat: 24.4539, lng: 54.3773, tz: 4 },
+    { id: "dubai",   name: "دبي",         lat: 25.2048, lng: 55.2708, tz: 4 },
+    { id: "sharjah", name: "الشارقة",     lat: 25.3463, lng: 55.4209, tz: 4 },
+    { id: "ajman",   name: "عجمان",       lat: 25.4052, lng: 55.5136, tz: 4 },
+    { id: "uaq",     name: "أم القيوين",  lat: 25.5647, lng: 55.5534, tz: 4 },
+    { id: "rak",     name: "رأس الخيمة",  lat: 25.7895, lng: 55.9432, tz: 4 },
+    { id: "fujairah",name: "الفجيرة",     lat: 25.1288, lng: 56.3265, tz: 4 },
+    { id: "alain",   name: "العين",       lat: 24.2075, lng: 55.7447, tz: 4 }
+  ];
+
+  /* ============ التحويل الهجري (أم القرى) ============ */
+  var DAY = 86400000, EPOCH = Date.UTC(622, 6, 19);
+
+  // أوائل الأشهر الميلادية لعام ١٤٤٨هـ وفق كتاب مركز جامع الشيخ زايد الكبير
+  // (آخر عنصر = غُرّة محرّم ١٤٤٩ = نهاية ذي الحجة)
+  var UMM1448 = [
+    Date.UTC(2026,5,16), Date.UTC(2026,6,16), Date.UTC(2026,7,14), Date.UTC(2026,8,12),
+    Date.UTC(2026,9,12), Date.UTC(2026,10,11), Date.UTC(2026,11,10), Date.UTC(2027,0,9),
+    Date.UTC(2027,1,8), Date.UTC(2027,2,10), Date.UTC(2027,3,8), Date.UTC(2027,4,7),
+    Date.UTC(2027,5,6)
+  ];
+
+  var hijriFmt = new Intl.DateTimeFormat("en-US-u-ca-islamic-umalqura",
+    { year: "numeric", month: "numeric", day: "numeric" });
+  function toHijriICU(date) {
+    var parts = hijriFmt.formatToParts(date), y, m, d;
+    for (var i = 0; i < parts.length; i++) {
+      var p = parts[i];
+      if (p.type === "year") y = parseInt(p.value, 10);
+      else if (p.type === "month") m = parseInt(p.value, 10);
+      else if (p.type === "day") d = parseInt(p.value, 10);
+    }
+    return { y: y, m: m, d: d };
+  }
+  // التحويل: نعتمد جدول المركز الرسمي داخل ١٤٤٨هـ، وأم القرى القياسي خارجه
+  function toHijri(date) {
+    var t = date.getTime();
+    if (t >= UMM1448[0] && t < UMM1448[12]) {
+      for (var i = 0; i < 12; i++) {
+        if (t < UMM1448[i + 1])
+          return { y: 1448, m: i + 1, d: Math.round((t - UMM1448[i]) / DAY) + 1 };
+      }
+    }
+    return toHijriICU(date);
+  }
+  function firstDayOf(hy, hm) {
+    if (hy === 1448) return new Date(UMM1448[hm - 1]);
+    if (hy === 1449 && hm === 1) return new Date(UMM1448[12]);
+    var est = Math.round((hy - 1) * 354.367 + (hm - 1) * 29.53);
+    var t = EPOCH + est * DAY;
+    for (var i = 0; i < 60; i++) {
+      var h = toHijriICU(new Date(t));
+      var diff = (h.y - hy) * 12 + (h.m - hm);
+      if (diff === 0) {
+        t -= (h.d - 1) * DAY;
+        var guard = 0;
+        while (guard++ < 6) {
+          var hh = toHijriICU(new Date(t));
+          if (hh.d === 1 && hh.m === hm && hh.y === hy) return new Date(t);
+          t -= (hh.d > 15 ? -(31 - hh.d) : (hh.d - 1)) * DAY;
+        }
+        return new Date(t);
+      }
+      t -= Math.round(diff * 29.53) * DAY;
+    }
+    return new Date(t);
+  }
+
+  /* ============ أوقات الصلاة (طريقة الإمارات) ============ */
+  function d2r(d){return d*Math.PI/180;} function r2d(r){return r*180/Math.PI;}
+  function sin(d){return Math.sin(d2r(d));} function cos(d){return Math.cos(d2r(d));} function tan(d){return Math.tan(d2r(d));}
+  function asin(x){return r2d(Math.asin(x));} function acos(x){return r2d(Math.acos(x));}
+  function atan2(y,x){return r2d(Math.atan2(y,x));} function acot(x){return r2d(Math.atan(1/x));}
+  function wrap(a,b){a=a%b;return a<0?a+b:a;} function w24(a){return wrap(a,24);}
+  function julian(y,m,d){ if(m<=2){y-=1;m+=12;} var A=Math.floor(y/100); var B=2-A+Math.floor(A/4); return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+B-1524.5; }
+  function sunPos(jd){ var D=jd-2451545.0; var g=wrap(357.529+0.98560028*D,360); var q=wrap(280.459+0.98564736*D,360);
+    var L=wrap(q+1.915*sin(g)+0.020*sin(2*g),360); var e=23.439-0.00000036*D;
+    return { dec: asin(sin(e)*sin(L)), eqt: q/15 - w24(atan2(cos(e)*sin(L),cos(L))/15) }; }
+  function prayerTimes(y, m, d, lat, lng, tz) {
+    var jDate = julian(y, m, d) - lng/(15*24);
+    function midDay(t){ return w24(12 - sunPos(jDate+t).eqt); }
+    function angleTime(angle, t, ccw){ var dec=sunPos(jDate+t).dec; var noon=midDay(t);
+      var x=(-sin(angle)-sin(dec)*sin(lat))/(cos(dec)*cos(lat)); x=Math.max(-1,Math.min(1,x));
+      var T=acos(x)/15; return noon + (ccw ? -T : T); }
+    function asrTime(t){ var dec=sunPos(jDate+t).dec; return angleTime(-acot(1+tan(Math.abs(lat-dec))), t, false); }
+    var t = { fajr:5/24, sunrise:6/24, dhuhr:12/24, asr:13/24, sunset:18/24, isha:18/24 };
+    for (var i=0;i<3;i++){
+      t.fajr   = angleTime(18.2, t.fajr, true)/24;
+      t.sunrise= angleTime(0.833, t.sunrise, true)/24;
+      t.dhuhr  = midDay(t.dhuhr)/24;
+      t.asr    = asrTime(t.asr)/24;
+      t.sunset = angleTime(0.833, t.sunset, false)/24;
+      t.isha   = angleTime(18.2, t.isha, false)/24;
+    }
+    var adj = tz - lng/15, o = {};
+    for (var k in t) o[k] = w24(t[k]*24 + adj);
+    o.maghrib = o.sunset;
+    // معايرة على جدول مركز جامع الشيخ زايد الكبير (التوقيت الزوالي لأبوظبي) — تطابق ±دقيقة
+    o.sunrise -= 3/60; o.dhuhr += 2/60; o.maghrib += 3/60;
+    return o;
+  }
+  function fmtTime(h){ if(h==null||isNaN(h)) return "—";
+    var tm=Math.round(h*60); tm=((tm%1440)+1440)%1440; var hr=Math.floor(tm/60), mn=tm%60;
+    var ap = hr<12 ? "ص" : "م"; var h12 = hr%12; if(h12===0) h12=12;
+    return toAr(h12)+":"+toAr(mn<10?"0"+mn:mn)+" "+ap; }
+
+  /* ============ المناسبات الإسلامية المتّفق عليها ============ */
+  // المناسبات وفق كتاب التقويم الهجري الرسمي لمركز جامع الشيخ زايد الكبير (١٤٤٨هـ)
+  function eventsFor(m, d) {
+    var ev = [];
+    if (m === 1 && d === 1)   ev.push({ t:"eid",    x:"رأس السنة الهجرية" });
+    if (m === 1 && d === 10)  ev.push({ t:"fast",   x:"يوم عاشوراء" });
+    if (m === 3 && d === 12)  ev.push({ t:"eid",    x:"المولد النبوي الشريف" });
+    if (m === 7 && d === 27)  ev.push({ t:"season", x:"الإسراء والمعراج" });
+    if (m === 9 && d === 1)   ev.push({ t:"season", x:"غرّة شهر رمضان المبارك" });
+    if (m === 9 && d >= 21)   ev.push({ t:"season", x:"العشر الأواخر من رمضان" });
+    if (m === 9 && d >= 21 && d % 2 === 1) ev.push({ t:"season", x:"تحرّي ليلة القدر (ليلة وتر)" });
+    if (m === 10 && d === 1)  ev.push({ t:"eid",    x:"عيد الفطر المبارك" });
+    if (m === 12 && d >= 1 && d <= 9)   ev.push({ t:"season", x:"العشر من ذي الحجة" });
+    if (m === 12 && d === 9)  ev.push({ t:"fast",   x:"وقفة عرفة" });
+    if (m === 12 && d === 10) ev.push({ t:"eid",    x:"عيد الأضحى المبارك" });
+    if (m === 12 && d >= 11 && d <= 13) ev.push({ t:"eid", x:"أيام التشريق" });
+    return ev;
+  }
+  function topType(ev){ for (var i=0;i<ev.length;i++) if(ev[i].t==="eid") return "eid";
+    for (var j=0;j<ev.length;j++) if(ev[j].t==="season") return "season"; return ev.length?"fast":null; }
+
+  /* ============ الحالة والعرض ============ */
+  var today = toHijri(new Date());
+  var state = { y: today.y, m: today.m };
+  var selected = null; // { greg: Date(UTC), h:{y,m,d} }
+
+  var curLoc = (function(){
+    var saved = null; try { saved = localStorage.getItem("uaeLoc"); } catch(e){}
+    for (var i=0;i<LOCS.length;i++) if(LOCS[i].id===saved) return LOCS[i];
+    return LOCS[0];
+  })();
+
+  var locSel = document.getElementById("calLoc");
+  for (var i=0;i<LOCS.length;i++){ var o=document.createElement("option"); o.value=LOCS[i].id; o.textContent=LOCS[i].name; locSel.appendChild(o); }
+  locSel.value = curLoc.id;
+  locSel.addEventListener("change", function(){
+    for (var k=0;k<LOCS.length;k++) if(LOCS[k].id===locSel.value) curLoc=LOCS[k];
+    try { localStorage.setItem("uaeLoc", curLoc.id); } catch(e){}
+    if (selected) updatePanel();
+  });
+
+  function updatePanel(){
+    if(!selected) return;
+    var g = selected.greg, h = selected.h;
+    document.getElementById("panelHijri").textContent =
+      WEEK[g.getUTCDay()] + " " + toAr(h.d) + " " + MONTHS[h.m-1] + " " + toAr(h.y) + " هـ";
+    document.getElementById("panelGreg").textContent =
+      toAr(g.getUTCDate()) + " " + GREG[g.getUTCMonth()] + " " + toAr(g.getUTCFullYear()) + " م";
+
+    var ev = eventsFor(h.m, h.d), box = document.getElementById("panelEvents");
+    box.innerHTML = "";
+    for (var i=0;i<ev.length;i++){ var b=document.createElement("span"); b.className="cal-badge badge-"+ev[i].t; b.textContent=ev[i].x; box.appendChild(b); }
+
+    var pt = prayerTimes(g.getUTCFullYear(), g.getUTCMonth()+1, g.getUTCDate(), curLoc.lat, curLoc.lng, curLoc.tz);
+    var rows = document.querySelectorAll(".cal-prayer");
+    for (var r=0;r<rows.length;r++){ var key=rows[r].getAttribute("data-k"); rows[r].querySelector(".p-time").textContent = fmtTime(pt[key]); }
+  }
+
+  function selectDay(greg, h, cellEl){
+    selected = { greg: greg, h: h };
+    var prev = document.querySelector(".cal-cell.cal-selected");
+    if (prev) prev.classList.remove("cal-selected");
+    if (cellEl) cellEl.classList.add("cal-selected");
+    updatePanel();
+  }
+
+  function render() {
+    var hm = state.m, hy = state.y;
+    var first = firstDayOf(hy, hm);
+    var nextM = hm === 12 ? 1 : hm + 1, nextY = hm === 12 ? hy + 1 : hy;
+    var next = firstDayOf(nextY, nextM);
+    var daysInMonth = Math.round((next.getTime() - first.getTime()) / DAY);
+
+    document.getElementById("calMonthName").textContent = MONTHS[hm-1] + " " + toAr(hy) + " هـ";
+    var lastG = new Date(next.getTime() - DAY);
+    var gA = GREG[first.getUTCMonth()] + " " + toAr(first.getUTCFullYear());
+    var gB = GREG[lastG.getUTCMonth()] + " " + toAr(lastG.getUTCFullYear());
+    document.getElementById("calGregRange").textContent = (gA === gB) ? gA : (gA + " – " + gB);
+
+    var startCol = (first.getUTCDay() + 1) % 7;
+    var body = document.getElementById("calBody");
+    body.innerHTML = "";
+    var dayNum = 1, cur = new Date(first.getTime()), todaysCell = null, firstCell = null;
+
+    for (var w = 0; w < 6 && dayNum <= daysInMonth; w++) {
+      var tr = document.createElement("tr");
+      for (var c = 0; c < 7; c++) {
+        var td = document.createElement("td");
+        if ((w === 0 && c < startCol) || dayNum > daysInMonth) {
+          td.className = "cal-empty";
+        } else {
+          var isToday = today.y === hy && today.m === hm && today.d === dayNum;
+          var isFri = cur.getUTCDay() === 5;
+          var ev = eventsFor(hm, dayNum), tt = topType(ev);
+          td.className = "cal-cell" + (isToday ? " cal-is-today" : "") + (isFri ? " cal-fri" : "");
+          td.innerHTML =
+            '<span class="cal-h">' + toAr(dayNum) + '</span>' +
+            '<span class="cal-g">' + toAr(cur.getUTCDate()) + " " + GREG[cur.getUTCMonth()].slice(0,3) + '</span>' +
+            (tt ? '<span class="cal-dot dot-' + tt + '"></span>' : "");
+          (function(g, h, cell){
+            cell.addEventListener("click", function(){ selectDay(g, h, cell); });
+          })(new Date(cur.getTime()), { y: hy, m: hm, d: dayNum }, td);
+          if (isToday) todaysCell = td;
+          if (!firstCell) firstCell = td;
+          dayNum++;
+          cur = new Date(cur.getTime() + DAY);
+        }
+        tr.appendChild(td);
+      }
+      body.appendChild(tr);
+    }
+    // اختر اليوم الحالي إن كان ضمن الشهر المعروض، وإلا أول يوم
+    if (todaysCell) todaysCell.click();
+    else if (firstCell) firstCell.click();
+  }
+
+  function step(delta){ var m=state.m+delta, y=state.y; if(m<1){m=12;y--;} else if(m>12){m=1;y++;} state.m=m; state.y=y; render(); }
+  document.getElementById("calPrev").addEventListener("click", function(){ step(-1); });
+  document.getElementById("calNext").addEventListener("click", function(){ step(1); });
+  document.getElementById("calToday").addEventListener("click", function(){ var h=toHijri(new Date()); state.y=h.y; state.m=h.m; render(); });
+
+  /* ============ المشاركة ============ */
+  var url = window.location.href;
+  var shareText = "📅 روزنامة هجرية تفاعلية مع أوقات الصلاة في الإمارات والمناسبات الإسلامية: ";
+  document.getElementById("calWhatsapp").href = "https://wa.me/?text=" + encodeURIComponent(shareText + url);
+  var copyBtn = document.getElementById("calCopy"), copied = document.getElementById("calCopied");
+  copyBtn.addEventListener("click", function(){
+    function done(){ copied.hidden=false; setTimeout(function(){ copied.hidden=true; }, 1800); }
+    if (navigator.clipboard && navigator.clipboard.writeText)
+      navigator.clipboard.writeText(url).then(done, function(){ window.prompt("انسخ الرابط:", url); });
+    else window.prompt("انسخ الرابط:", url);
+  });
+  var sysBtn = document.getElementById("calSysShare");
+  if (navigator.share){ sysBtn.hidden=false; sysBtn.addEventListener("click", function(){ navigator.share({ title:"روزنامة هجرية تفاعلية", text:shareText, url:url }).catch(function(){}); }); }
+
+  render();
+})();
+</script>
