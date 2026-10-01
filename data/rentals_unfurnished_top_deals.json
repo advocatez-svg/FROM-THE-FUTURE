@@ -1,23 +1,5 @@
 [
  {
-  "area": "خلدا",
-  "furnishing": "غير محدد",
-  "period": "annual",
-  "period_label": "سنوي",
-  "price": 5000,
-  "monthly_price": 416.67,
-  "size": 210,
-  "source": "Bayut",
-  "title": "3 Bedrooms Apartment For Rent Khalda, Amman",
-  "url": "https://www.bayut.jo/en/property/details-108471.html",
-  "advertiser_type": "غير محدد",
-  "monthly_price_per_sqm": 1.98,
-  "reference_monthly_rent": 690.9,
-  "difference_from_reference_pct": -40,
-  "outlier_warning": false,
-  "value_label": "🟢 فرصة إيجار"
- },
- {
   "area": "دابوق",
   "furnishing": "غير محدد",
   "period": "annual",
@@ -175,6 +157,24 @@
   "advertiser_type": "وسيط / منصة عقارية",
   "monthly_price_per_sqm": 2.71,
   "reference_monthly_rent": 1668.0,
+  "difference_from_reference_pct": -35,
+  "outlier_warning": false,
+  "value_label": "🟢 فرصة إيجار"
+ },
+ {
+  "area": "دير غبار",
+  "furnishing": "غير محدد",
+  "period": "annual",
+  "period_label": "سنوي",
+  "price": 13000,
+  "monthly_price": 1083.33,
+  "size": 280,
+  "source": "Bayut",
+  "title": "شقة فاخرة للايجار في دير غبار | 280 م2",
+  "url": "https://www.bayut.jo/en/property/details-UID508.html",
+  "advertiser_type": "وسيط / منصة عقارية",
+  "monthly_price_per_sqm": 3.87,
+  "reference_monthly_rent": 1663.2,
   "difference_from_reference_pct": -35,
   "outlier_warning": false,
   "value_label": "🟢 فرصة إيجار"
