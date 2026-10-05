@@ -1,5 +1,5 @@
 {
- "date": "2026-10-04",
+ "date": "2026-10-05",
  "areas": [
   {
    "name": "عبدون"
@@ -43,10 +43,10 @@
     "q3_monthly_per_sqm": 5.83
    },
    "regular": {
-    "sample_size": 120,
-    "median_monthly_per_sqm": 3.31,
-    "q1_monthly_per_sqm": 2.71,
-    "q3_monthly_per_sqm": 3.96
+    "sample_size": 122,
+    "median_monthly_per_sqm": 3.33,
+    "q1_monthly_per_sqm": 2.73,
+    "q3_monthly_per_sqm": 3.95
    }
   },
   {
@@ -58,9 +58,9 @@
     "q3_monthly_per_sqm": 6.06
    },
    "regular": {
-    "sample_size": 35,
-    "median_monthly_per_sqm": 3.17,
-    "q1_monthly_per_sqm": 2.75,
+    "sample_size": 36,
+    "median_monthly_per_sqm": 3.15,
+    "q1_monthly_per_sqm": 2.76,
     "q3_monthly_per_sqm": 4.17
    }
   },
@@ -110,10 +110,10 @@
    }
   }
  ],
- "total_listings": 564,
+ "total_listings": 567,
  "furnished_count": 139,
  "unfurnished_count": 5,
- "regular_count": 425,
- "unknown_furnishing_count": 420,
+ "regular_count": 428,
+ "unknown_furnishing_count": 423,
  "top_per_type": 10
 }
