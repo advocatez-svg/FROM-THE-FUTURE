@@ -1,5 +1,5 @@
 {
- "date": "2026-10-17",
+ "date": "2026-10-18",
  "areas": [
   {
    "name": "عبدون"
@@ -13,24 +13,24 @@
     "q3_monthly_per_sqm": 7.42
    },
    "regular": {
-    "sample_size": 63,
+    "sample_size": 62,
     "median_monthly_per_sqm": 4.17,
     "q1_monthly_per_sqm": 3.57,
-    "q3_monthly_per_sqm": 5.23
+    "q3_monthly_per_sqm": 5.25
    }
   },
   {
    "name": "دير غبار",
    "furnished": {
-    "sample_size": 63,
+    "sample_size": 65,
     "median_monthly_per_sqm": 6.25,
     "q1_monthly_per_sqm": 5.0,
-    "q3_monthly_per_sqm": 6.94
+    "q3_monthly_per_sqm": 7.03
    },
    "regular": {
-    "sample_size": 122,
-    "median_monthly_per_sqm": 5.89,
-    "q1_monthly_per_sqm": 4.42,
+    "sample_size": 123,
+    "median_monthly_per_sqm": 5.88,
+    "q1_monthly_per_sqm": 4.29,
     "q3_monthly_per_sqm": 7.43
    }
   },
@@ -43,10 +43,10 @@
     "q3_monthly_per_sqm": 5.83
    },
    "regular": {
-    "sample_size": 116,
-    "median_monthly_per_sqm": 3.35,
+    "sample_size": 112,
+    "median_monthly_per_sqm": 3.33,
     "q1_monthly_per_sqm": 2.71,
-    "q3_monthly_per_sqm": 3.99
+    "q3_monthly_per_sqm": 3.96
    }
   },
   {
@@ -58,10 +58,10 @@
     "q3_monthly_per_sqm": 6.06
    },
    "regular": {
-    "sample_size": 32,
-    "median_monthly_per_sqm": 3.39,
-    "q1_monthly_per_sqm": 2.8,
-    "q3_monthly_per_sqm": 4.2
+    "sample_size": 30,
+    "median_monthly_per_sqm": 3.23,
+    "q1_monthly_per_sqm": 2.79,
+    "q3_monthly_per_sqm": 4.17
    }
   },
   {
@@ -110,10 +110,10 @@
    }
   }
  ],
- "total_listings": 545,
- "furnished_count": 139,
+ "total_listings": 525,
+ "furnished_count": 141,
  "unfurnished_count": 5,
- "regular_count": 406,
- "unknown_furnishing_count": 401,
+ "regular_count": 384,
+ "unknown_furnishing_count": 379,
  "top_per_type": 10
 }
