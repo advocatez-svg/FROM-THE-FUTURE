@@ -8,6 +8,7 @@ dir: rtl
 <section class="page-content" lang="ar" dir="rtl">
 <h1>قادم من المستقبل</h1>
 <p>مقالات أدبية وتأملات إنسانية مختارة للنشر.</p>
+<p>📅 <a href="{{ '/taqweem/' | relative_url }}">الروزنامة الهجرية التفاعلية</a> — تصفّح الأشهر الهجرية وشاركها مع أصدقائك.</p>
 <ul class="post-list">
   <li><time datetime="2026-06-12">2026-06-12</time><h2><a href="{{ site.baseurl }}/2026/06/12/article-01/">الأب: ذلك الحب الصامت</a></h2></li>
   <li><time datetime="2026-06-13">2026-06-13</time><h2><a href="{{ site.baseurl }}/2026/06/13/article-02/">الأم: الوطن الأول</a></h2></li>
