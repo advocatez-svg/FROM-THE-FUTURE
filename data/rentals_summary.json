@@ -1,5 +1,5 @@
 {
- "date": "2026-10-25",
+ "date": "2026-10-26",
  "areas": [
   {
    "name": "عبدون"
@@ -43,8 +43,8 @@
     "q3_monthly_per_sqm": 5.79
    },
    "regular": {
-    "sample_size": 110,
-    "median_monthly_per_sqm": 3.33,
+    "sample_size": 109,
+    "median_monthly_per_sqm": 3.37,
     "q1_monthly_per_sqm": 2.78,
     "q3_monthly_per_sqm": 3.95
    }
