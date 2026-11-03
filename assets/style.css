@@ -18,3 +18,66 @@ a:hover { text-decoration: underline; }
 .post p { margin: 0 0 1.25em; font-size: 1.12rem; }
 .post-hero { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; margin: 0 0 1.75rem; border-radius: 6px; }
 @media (max-width: 640px) { .site-wrap { width: min(100% - 22px, 920px); padding-top: 24px; } .post, .page-content { padding: 18px; } .post p { font-size: 1.04rem; } }
+
+/* ===== الروزنامة الهجرية التفاعلية ===== */
+.cal-intro { color: var(--muted); margin: 0 0 22px; }
+.cal-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+.cal-nav { display: flex; align-items: center; gap: 10px; }
+.cal-title { text-align: center; min-width: 200px; }
+.cal-title span { display: block; font-size: 1.4rem; font-weight: 700; color: var(--ink); }
+.cal-title small { display: block; color: var(--muted); font-size: .9rem; margin-top: 2px; }
+.cal-btn { font-family: inherit; cursor: pointer; background: var(--paper); color: var(--accent); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; font-size: 1.1rem; line-height: 1; transition: background .15s, color .15s; }
+.cal-btn:hover { background: var(--accent); color: #fff; }
+.cal-today-btn { font-size: .95rem; padding: 9px 16px; }
+.cal-grid { width: 100%; border-collapse: separate; border-spacing: 6px; table-layout: fixed; }
+.cal-grid th { color: var(--muted); font-weight: 600; font-size: .9rem; padding: 6px 0; }
+.cal-grid td { height: 64px; vertical-align: top; border-radius: 8px; }
+.cal-cell { position: relative; background: var(--paper); border: 1px solid var(--line); padding: 6px 8px; cursor: pointer; transition: border-color .15s, box-shadow .15s; }
+.cal-cell:hover { border-color: var(--accent); }
+.cal-cell .cal-h { display: block; font-size: 1.25rem; font-weight: 700; color: var(--ink); }
+.cal-cell .cal-g { display: block; font-size: .72rem; color: var(--muted); margin-top: 2px; }
+.cal-empty { background: transparent; }
+.cal-fri .cal-h { color: var(--accent); }
+.cal-is-today { background: var(--accent); border-color: var(--accent); }
+.cal-is-today .cal-h, .cal-is-today .cal-g { color: #fff; }
+.cal-selected { box-shadow: 0 0 0 2px var(--accent) inset; }
+.cal-dot { position: absolute; bottom: 5px; left: 6px; width: 7px; height: 7px; border-radius: 50%; }
+.dot-eid { background: #c0392b; } .dot-season { background: #b7791f; } .dot-fast { background: var(--accent); }
+
+/* وسيلة الإيضاح */
+.cal-legend { list-style: none; display: flex; gap: 18px; flex-wrap: wrap; padding: 0; margin: 12px 2px 0; color: var(--muted); font-size: .85rem; }
+.cal-legend li { display: flex; align-items: center; gap: 6px; }
+.cal-legend .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+/* لوحة اليوم المختار */
+.cal-panel { margin-top: 22px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); padding: 18px 20px; }
+.cal-panel-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 12px; }
+.cal-panel-head strong { display: block; font-size: 1.15rem; }
+.cal-panel-head small { color: var(--muted); }
+.cal-loc { display: flex; align-items: center; gap: 8px; }
+.cal-loc select { font-family: inherit; font-size: 1rem; padding: 7px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); }
+.cal-events { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.cal-events:empty { display: none; }
+.cal-badge { font-size: .85rem; padding: 5px 12px; border-radius: 999px; color: #fff; }
+.badge-eid { background: #c0392b; } .badge-season { background: #b7791f; } .badge-fast { background: var(--accent); }
+.cal-prayers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.cal-prayer { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px; text-align: center; }
+.cal-prayer .p-name { display: block; color: var(--muted); font-size: .9rem; margin-bottom: 4px; }
+.cal-prayer .p-time { display: block; font-size: 1.25rem; font-weight: 700; color: var(--accent); }
+.cal-share { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 26px 0 14px; padding-top: 18px; border-top: 1px solid var(--line); }
+.cal-share-label { color: var(--muted); }
+.cal-share-btn { font-size: .95rem; padding: 9px 16px; }
+.cal-copied { color: var(--accent); font-size: .9rem; }
+.cal-note { color: var(--muted); font-size: .85rem; margin: 6px 0 0; }
+@media (max-width: 640px) {
+  .cal-grid { border-spacing: 4px; }
+  .cal-grid th { font-size: .72rem; }
+  .cal-grid td { height: 52px; }
+  .cal-cell { padding: 4px 5px; }
+  .cal-cell .cal-h { font-size: 1.05rem; }
+  .cal-cell .cal-g { font-size: .62rem; }
+  .cal-title span { font-size: 1.15rem; }
+  .cal-dot { bottom: 3px; left: 3px; width: 6px; height: 6px; }
+  .cal-prayers { grid-template-columns: repeat(2, 1fr); }
+  .cal-prayer .p-time { font-size: 1.1rem; }
+}
