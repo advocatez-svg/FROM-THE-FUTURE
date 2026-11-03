@@ -1,5 +1,5 @@
 {
- "date": "2026-11-02",
+ "date": "2026-11-03",
  "areas": [
   {
    "name": "عبدون"
@@ -110,10 +110,10 @@
    }
   }
  ],
- "total_listings": 511,
+ "total_listings": 512,
  "furnished_count": 142,
  "unfurnished_count": 5,
- "regular_count": 369,
- "unknown_furnishing_count": 364,
+ "regular_count": 370,
+ "unknown_furnishing_count": 365,
  "top_per_type": 10
 }
