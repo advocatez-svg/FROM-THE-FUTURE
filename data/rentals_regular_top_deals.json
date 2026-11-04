@@ -126,24 +126,6 @@
   "value_label": "🟢 فرصة إيجار"
  },
  {
-  "area": "خلدا",
-  "furnishing": "غير محدد",
-  "period": "annual",
-  "period_label": "سنوي",
-  "price": 4850,
-  "monthly_price": 404.17,
-  "size": 185,
-  "source": "Bayut",
-  "title": "شقة طابق أول في خلدا للإيجار",
-  "url": "https://www.bayut.jo/en/property/details-DKT2723.html",
-  "advertiser_type": "وسيط / منصة عقارية",
-  "monthly_price_per_sqm": 2.18,
-  "reference_monthly_rent": 621.6,
-  "difference_from_reference_pct": -35,
-  "outlier_warning": false,
-  "value_label": "🟢 فرصة إيجار"
- },
- {
   "area": "دابوق",
   "furnishing": "غير محدد",
   "period": "annual",
@@ -176,6 +158,24 @@
   "monthly_price_per_sqm": 2.71,
   "reference_monthly_rent": 1668.0,
   "difference_from_reference_pct": -35,
+  "outlier_warning": false,
+  "value_label": "🟢 فرصة إيجار"
+ },
+ {
+  "area": "خلدا",
+  "furnishing": "غير محدد",
+  "period": "annual",
+  "period_label": "سنوي",
+  "price": 4850,
+  "monthly_price": 404.17,
+  "size": 185,
+  "source": "Bayut",
+  "title": "شقة طابق أول في خلدا للإيجار",
+  "url": "https://www.bayut.jo/en/property/details-DKT2723.html",
+  "advertiser_type": "وسيط / منصة عقارية",
+  "monthly_price_per_sqm": 2.18,
+  "reference_monthly_rent": 616.05,
+  "difference_from_reference_pct": -34,
   "outlier_warning": false,
   "value_label": "🟢 فرصة إيجار"
  }
