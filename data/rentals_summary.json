@@ -1,5 +1,5 @@
 {
- "date": "2026-11-06",
+ "date": "2026-11-07",
  "areas": [
   {
    "name": "عبدون"
@@ -37,15 +37,15 @@
   {
    "name": "خلدا",
    "furnished": {
-    "sample_size": 35,
-    "median_monthly_per_sqm": 4.82,
-    "q1_monthly_per_sqm": 3.71,
-    "q3_monthly_per_sqm": 6.33
+    "sample_size": 36,
+    "median_monthly_per_sqm": 4.91,
+    "q1_monthly_per_sqm": 3.73,
+    "q3_monthly_per_sqm": 6.17
    },
    "regular": {
-    "sample_size": 91,
-    "median_monthly_per_sqm": 3.33,
-    "q1_monthly_per_sqm": 2.75,
+    "sample_size": 90,
+    "median_monthly_per_sqm": 3.36,
+    "q1_monthly_per_sqm": 2.8,
     "q3_monthly_per_sqm": 4.04
    }
   },
@@ -58,10 +58,10 @@
     "q3_monthly_per_sqm": 6.19
    },
    "regular": {
-    "sample_size": 29,
-    "median_monthly_per_sqm": 3.33,
+    "sample_size": 28,
+    "median_monthly_per_sqm": 3.39,
     "q1_monthly_per_sqm": 2.78,
-    "q3_monthly_per_sqm": 4.29
+    "q3_monthly_per_sqm": 4.33
    }
   },
   {
@@ -110,10 +110,10 @@
    }
   }
  ],
- "total_listings": 659,
- "furnished_count": 191,
+ "total_listings": 658,
+ "furnished_count": 192,
  "unfurnished_count": 6,
- "regular_count": 468,
- "unknown_furnishing_count": 462,
+ "regular_count": 466,
+ "unknown_furnishing_count": 460,
  "top_per_type": 10
 }
