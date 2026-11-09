@@ -1,5 +1,5 @@
 {
- "date": "2026-11-08",
+ "date": "2026-11-09",
  "areas": [
   {
    "name": "عبدون"
@@ -13,40 +13,40 @@
     "q3_monthly_per_sqm": 7.42
    },
    "regular": {
-    "sample_size": 63,
+    "sample_size": 64,
     "median_monthly_per_sqm": 4.17,
-    "q1_monthly_per_sqm": 3.55,
-    "q3_monthly_per_sqm": 5.23
+    "q1_monthly_per_sqm": 3.56,
+    "q3_monthly_per_sqm": 5.22
    }
   },
   {
    "name": "دير غبار",
    "furnished": {
-    "sample_size": 61,
-    "median_monthly_per_sqm": 6.0,
+    "sample_size": 58,
+    "median_monthly_per_sqm": 6.12,
     "q1_monthly_per_sqm": 5.0,
-    "q3_monthly_per_sqm": 6.84
+    "q3_monthly_per_sqm": 6.98
    },
    "regular": {
-    "sample_size": 90,
+    "sample_size": 93,
     "median_monthly_per_sqm": 5.21,
-    "q1_monthly_per_sqm": 3.8,
+    "q1_monthly_per_sqm": 3.7,
     "q3_monthly_per_sqm": 7.14
    }
   },
   {
    "name": "خلدا",
    "furnished": {
-    "sample_size": 36,
+    "sample_size": 34,
     "median_monthly_per_sqm": 4.91,
-    "q1_monthly_per_sqm": 3.73,
-    "q3_monthly_per_sqm": 6.17
+    "q1_monthly_per_sqm": 3.79,
+    "q3_monthly_per_sqm": 6.5
    },
    "regular": {
-    "sample_size": 91,
-    "median_monthly_per_sqm": 3.33,
-    "q1_monthly_per_sqm": 2.75,
-    "q3_monthly_per_sqm": 4.04
+    "sample_size": 96,
+    "median_monthly_per_sqm": 3.36,
+    "q1_monthly_per_sqm": 2.76,
+    "q3_monthly_per_sqm": 4.01
    }
   },
   {
@@ -58,10 +58,10 @@
     "q3_monthly_per_sqm": 6.19
    },
    "regular": {
-    "sample_size": 29,
-    "median_monthly_per_sqm": 3.45,
-    "q1_monthly_per_sqm": 2.78,
-    "q3_monthly_per_sqm": 4.44
+    "sample_size": 31,
+    "median_monthly_per_sqm": 3.33,
+    "q1_monthly_per_sqm": 2.79,
+    "q3_monthly_per_sqm": 4.37
    }
   },
   {
@@ -110,10 +110,10 @@
    }
   }
  ],
- "total_listings": 660,
- "furnished_count": 192,
+ "total_listings": 654,
+ "furnished_count": 187,
  "unfurnished_count": 6,
- "regular_count": 468,
- "unknown_furnishing_count": 462,
+ "regular_count": 467,
+ "unknown_furnishing_count": 461,
  "top_per_type": 10
 }
