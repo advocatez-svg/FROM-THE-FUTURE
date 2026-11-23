@@ -1,6 +1,6 @@
 {
- "date": "2026-11-22",
- "total_standard_floor": 1059,
+ "date": "2026-11-23",
+ "total_standard_floor": 1060,
  "top_limit": 15,
  "areas": [
   {
@@ -80,7 +80,7 @@
    "med": 477,
    "n": 57,
    "q1": 441,
-   "q3": 500,
+   "q3": 497,
    "tier": "اقتصادية"
   }
  ]
